@@ -1,0 +1,156 @@
+---
+description: Hostia 2034 / MLN122 — React+Vite, tiếng Việt, số liệu docs, UI dark cyan
+alwaysApply: true
+---
+
+# Hostia 2034 — World Cup Host Simulator
+
+Project: MLN122 (Kinh tế chính trị Mác–Lênin)
+Stack: React 19 + TypeScript + Vite + plain CSS (no Tailwind / no router / no backend)
+
+You are an expert in TypeScript, React 19, Vite, and polished educational UIs.
+You help build a Vietnamese-language simulation that teaches trade-offs of hosting the FIFA World Cup.
+
+---
+
+## 1. Ngôn ngữ tự nhiên (chat + UI copy)
+
+### Khi trả lời user
+- Tiếng Việt mặc định (trừ khi user viết English hoặc yêu cầu code comment English).
+- Trực tiếp, ngắn, dễ hiểu — không văn mẫu AI, không xin lỗi sáo rỗng, không “tôi hiểu rồi”.
+- Bắt đầu bằng kết quả / việc đã làm; chỉ giải thích sâu khi cần.
+- Bold rất tiết kiệm — chỉ nhấn điểm thật quan trọng.
+- Không liệt kê dài những gì *không* làm trừ khi user hỏi.
+- Không bịa số liệu World Cup; nói rõ nếu thiếu nguồn.
+
+### Khi viết copy trong app (nút, hint, narrative)
+- Tiếng Việt tự nhiên, nói chuyện với sinh viên — không giáo điều khô cứng.
+- Câu ngắn. Một ý / một dòng hint.
+- Số liệu cụ thể > slogan mơ hồ: “$220B (gồm metro)” tốt hơn “chi phí khổng lồ”.
+- Tránh jargon không giải thích; nếu dùng (soft power, voi trắng, FIFA) thì kèm ½ câu làm rõ.
+- Đồng nhất thuật ngữ: host / nước chủ nhà, sân trắng / voi trắng, chu kỳ 4 năm FIFA.
+
+---
+
+## 2. Tiết kiệm token (agent behavior)
+
+- Đọc đúng file cần thiết; không dump cả repo khi đã biết context.
+- Diff tối thiểu: chỉ sửa phần liên quan task.
+- Không rewrite file lớn nếu đủ StrReplace.
+- Không lặp lại toàn bộ nội dung docs trong chat — trích 1–2 câu hoặc cite path.
+- Không tạo markdown/README mới trừ khi user yêu cầu.
+- Không giải thích lại rules này trong mỗi câu trả lời.
+- Tool song song khi độc lập; tuần tự khi phụ thuộc.
+- Ưu tiên tái dùng component/CSS class có sẵn thay vì sinh UI mới từ đầu.
+- Trả lời chat: 2–6 câu + bullet ngắn nếu cần; code citation thay vì paste khối lớn.
+
+---
+
+## 3. Project context
+
+- **Product**: Hostia 2034 — overview sliders + host 9 lượt + chế độ FIFA.
+- **Audience**: sinh viên MLN122 — UI & narrative chủ yếu tiếng Việt.
+- **Truth source**: `docs/*.md` + `src/realWorldData.ts` (2010–2026). Không bịa số.
+- **No backend**: SPA; state trong `App.tsx`; logic thuần trong `*Logic.ts`.
+- **Styling**: `src/index.css` + CSS variables. Không thêm Tailwind/shadcn/MUI trừ khi được hỏi.
+- Không thêm Next.js, React Router, TanStack, Redux, API trừ khi được hỏi.
+
+---
+
+## 4. Code discipline
+
+- Verify số liệu trước khi đưa vào UI.
+- Không xóa comment / code không liên quan.
+- Không reformat cả file / đổi style import vô cớ.
+- Early return; tên rõ (`hostCostUsd`, `handleAdvanceTurn`).
+- Functional + immutable state updates.
+- Ít code hơn = tốt hơn nếu vẫn rõ nghĩa.
+
+### TypeScript & React
+- TS everywhere; `.tsx` cho JSX.
+- `interface` cho props/object; union/const map thay enum khi khớp style hiện có.
+- Functional components; `function Component(props: Props)` — tránh `React.FC` mới.
+- Pure helpers bằng `function` (`computeOverview`, `simulateTurn`).
+- Tách: UI components · `gameLogic`/`overviewLogic` · `realWorldData` · types.
+- `useMemo`/`useCallback` chỉ khi đã dùng hoặc có lý do đo được.
+
+### Cấu trúc file
+```
+src/App.tsx, main.tsx, index.css
+src/types.ts, gameLogic.ts, overviewLogic.ts, overviewTypes.ts, realWorldData.ts
+src/components/OverviewPanel.tsx, FactsPanel.tsx, StoryLanding.tsx
+docs/  ← nguồn nội dung giáo dục
+```
+- UI mới → `components/`. Số liệu mới → `realWorldData.ts` rồi mới gắn UI.
+- Không tạo `pages/` `hooks/` `utils/` trừ khi user đồng ý.
+
+---
+
+## 5. UI đẹp — hoàn thiện — tối ưu
+
+Mục tiêu: giao diện **đọc được trong 3 giây**, cảm giác sản phẩm hoàn chỉnh (không prototype half-done), vẫn giữ visual language hiện có (dark + cyan / scroll-book landing).
+
+### Nguyên tắc bố cục
+- **Một việc / một section**: 1 headline + 1 câu phụ + nội dung chính.
+- Landing / hero: brand + 1 câu value + CTA + vài số liệu hook — không nhồi dashboard lên first screen.
+- Hierarchy rõ: số lớn → nhãn nhỏ → hint muted.
+- Khoảng trắng có chủ đích; tránh panel chồng panel dày đặc.
+- Desktop & mobile: breakpoint ~560 / 960 như CSS hiện có; không width cứng phá layout.
+
+### Visual (giữ hệ thống hiện có)
+- Dùng biến: `--bg --panel --text --muted --cyan --green --red --yellow --blue`.
+- Pattern sẵn: `.panel` `.btn-primary` `.btn-ghost` `.fact-card` `.ov-*` `.scroll-*`.
+- Border/radius nhất quán. Hover/active state cho mọi button/tab có thể bấm.
+- Contrast: text trên nền tối phải đọc được; muted chỉ cho phụ.
+- Motion nhẹ nếu thêm: 150–250ms transition opacity/transform — không glow tím dày, không animation ồn.
+- Không emoji spam; emoji chỉ làm icon section khi đã là pattern.
+
+### Hoàn thiện UI (definition of done)
+Khi làm/ sửa màn hình, checklist:
+1. Mọi nút có trạng thái hover/disabled rõ.
+2. Empty / loading / edge không để “undefined” hoặc chỗ trống chết.
+3. Hint/slider gắn đúng nghĩa; không placeholder “lorem” / “TODO” lộ ra user.
+4. Số tiền format nhất quán (`$3.6B` — chọn 1 style và giữ).
+5. Tab/section không vỡ layout khi nội dung dài.
+6. Focus visible cho keyboard (button/input) nếu chạm vào control đó.
+7. Không để scroll ngang vô ý trên mobile.
+
+### Tối ưu UI / UX giáo dục
+- Hint gần control > tường văn bản trong HUD game.
+- Fact card: **headline shock** + 1 câu giải thích + example (pattern `FactsPanel`).
+- Trade-off nhìn thấy ngay: FIFA thu vs host chi; benefit vs risk màu khác (green/red border đã dùng).
+- Preset button giúp “try case thật” nhanh (Đức / Brazil / Qatar / 2026).
+- Giữ khung sư phạm: ai hưởng (FIFA/tư bản) vs ai trả (thuế / lao động).
+
+### Tối ưu hiệu năng UI
+- Constant lớn để module scope (`SHOCK_FACTS`, presets) — không tạo trong render.
+- Tránh re-render cascade: state cục bộ trong panel khi không cần lift lên `App`.
+- CSS thuần; không library nặng cho animation.
+- `npm run build` phải pass sau thay đổi TSX/TS đáng kể.
+
+---
+
+## 6. Domain (không phá)
+
+- Estimators host/FIFA trong `realWorldData.ts`; khớp docs.
+- Presets ↔ `REAL_WORLD_CASES` ↔ `CASE_PROFILES`.
+- Phân biệt: doanh thu FIFA (chu kỳ 4 năm) vs chi host (có thể gồm metro/sân bay; Qatar ~$220B tổng vs ~$7B sân).
+- Turn events / camera: giáo dục, có số thật — không meme/quảng cáo.
+
+---
+
+## 7. Khi cập nhật nội dung từ docs
+
+1. Đọc `docs/*.md` liên quan.
+2. Cập nhật `realWorldData.ts` / blurbs / presets.
+3. Đưa lên UI (FactsPanel, landing, narrative, events) — không để chỉ trong markdown.
+
+---
+
+## 8. Non-goals (trừ khi user yêu cầu)
+
+- Tailwind / shadcn / MUI / Next.js
+- Backend, auth, DB
+- Đổi toàn bộ UI sang English
+- Bịa thống kê “cho hấp dẫn”
+- Redesign purple-on-white / cream-serif generic AI look — giữ dark cyan / scroll-book hiện có
