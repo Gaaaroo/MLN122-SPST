@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import {
   SCROLL_ACHIEVE,
   SCROLL_BEFORE_AFTER,
@@ -48,22 +48,10 @@ function ChapterHead({
 }
 
 export function StoryLanding({ onExplore, onSimulate }: Props) {
-  const [unlocked, setUnlocked] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!unlocked) {
-      document.body.style.overflow = "hidden";
-      return () => {
-        document.body.style.overflow = "";
-      };
-    }
-    document.body.style.overflow = "";
-    return undefined;
-  }, [unlocked]);
-
-  useEffect(() => {
-    if (!unlocked || !rootRef.current) return;
+    if (!rootRef.current) return;
     const nodes = rootRef.current.querySelectorAll<HTMLElement>("[data-reveal]");
     const io = new IntersectionObserver(
       (entries) => {
@@ -75,17 +63,10 @@ export function StoryLanding({ onExplore, onSimulate }: Props) {
     );
     nodes.forEach((n) => io.observe(n));
     return () => io.disconnect();
-  }, [unlocked]);
+  }, []);
 
   return (
-    <div className={`scroll-book ${unlocked ? "is-unlocked" : ""}`} ref={rootRef}>
-      {!unlocked ? (
-        <button type="button" className="scroll-gate" onClick={() => setUnlocked(true)}>
-          <span className="scroll-gate-pulse" />
-          <span className="scroll-gate-label">{SCROLL_META.gate}</span>
-        </button>
-      ) : null}
-
+    <div className="scroll-book is-unlocked" ref={rootRef}>
       <header className="scroll-topbar">
         <p className="scroll-topbar-brand">
           {SCROLL_META.brand}
@@ -100,11 +81,19 @@ export function StoryLanding({ onExplore, onSimulate }: Props) {
       {/* HERO */}
       <section className="scroll-hero" aria-label="Mở đầu">
         <div className="scroll-hero-bg" aria-hidden>
-          <div className="scroll-hero-photo" />
+          <video
+            className="scroll-hero-video"
+            src="/hero.mp4"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+          />
           <div className="scroll-hero-veil" />
           <div className="scroll-hero-grain" />
         </div>
-        <div className="scroll-hero-inner" data-reveal>
+        <div className="scroll-hero-inner is-in" data-reveal>
           <p className="scroll-kicker">{SCROLL_HERO.kicker}</p>
           <h1 className="scroll-hero-title">
             <span>{SCROLL_HERO.titleLine1}</span>

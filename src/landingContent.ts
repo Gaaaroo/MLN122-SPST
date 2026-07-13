@@ -5,7 +5,6 @@
  */
 
 export const SCROLL_META = {
-  gate: "CLICK CHUỘT ĐỂ KÍCH HOẠT TRẢI NGHIỆM",
   brand: "Hostia",
   brandYear: "2034",
   course: "MLN122 · Kinh tế chính trị World Cup",
