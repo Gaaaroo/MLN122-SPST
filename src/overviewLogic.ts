@@ -1,15 +1,17 @@
 import type {
   MarxistAlignment,
+  MetricDriver,
+  MetricExplanation,
   OverviewConfig,
   OverviewOutcome,
   RealWorldCase,
-  TimelinePhase,
 } from "./overviewTypes";
 import { REAL_WORLD_CASES } from "./overviewTypes";
 import {
   estimateFifaRevenueB,
   estimateHostCostB,
   HOST_COST_BY_EDITION,
+  MODEL_WC_TEAMS,
 } from "./realWorldData";
 
 function clamp(v: number, min: number, max: number) {
@@ -23,7 +25,6 @@ const CASE_PROFILES: Record<string, Partial<OverviewConfig>> = {
     socialSpend: 65,
     tourismFocus: 55,
     laborProtection: 70,
-    teams: 32,
     asiaSlots: 4,
     chinaPriority: 20,
   },
@@ -33,7 +34,6 @@ const CASE_PROFILES: Record<string, Partial<OverviewConfig>> = {
     socialSpend: 45,
     tourismFocus: 60,
     laborProtection: 50,
-    teams: 32,
     asiaSlots: 4,
     chinaPriority: 15,
   },
@@ -43,7 +43,6 @@ const CASE_PROFILES: Record<string, Partial<OverviewConfig>> = {
     socialSpend: 25,
     tourismFocus: 70,
     laborProtection: 30,
-    teams: 32,
     asiaSlots: 4,
     chinaPriority: 25,
   },
@@ -53,7 +52,6 @@ const CASE_PROFILES: Record<string, Partial<OverviewConfig>> = {
     socialSpend: 40,
     tourismFocus: 65,
     laborProtection: 45,
-    teams: 32,
     asiaSlots: 4,
     chinaPriority: 30,
   },
@@ -63,7 +61,6 @@ const CASE_PROFILES: Record<string, Partial<OverviewConfig>> = {
     socialSpend: 20,
     tourismFocus: 85,
     laborProtection: 15,
-    teams: 32,
     asiaSlots: 4,
     chinaPriority: 35,
   },
@@ -73,7 +70,6 @@ const CASE_PROFILES: Record<string, Partial<OverviewConfig>> = {
     socialSpend: 45,
     tourismFocus: 70,
     laborProtection: 55,
-    teams: 48,
     asiaSlots: 8,
     chinaPriority: 50,
   },
@@ -93,7 +89,6 @@ function distance(a: OverviewConfig, b: Partial<OverviewConfig>): number {
   for (const k of keys) {
     sum += Math.abs(a[k] - (b[k] ?? a[k]));
   }
-  if (b.teams !== undefined && a.teams !== b.teams) sum += 25;
   return sum;
 }
 
@@ -125,7 +120,7 @@ function buildTags(
   if (c.tourismFocus > 70) tags.push("Thương hiệu quốc gia");
   if (c.laborProtection < 30) tags.push("Lao động chịu áp lực");
   if (c.laborProtection > 65) tags.push("Bảo vệ người lao động");
-  if (c.teams >= 48) tags.push("World Cup 48 đội (104 trận)");
+  if (c.asiaSlots >= 8) tags.push("Suất châu Á tối đa (2026)");
   if (c.chinaPriority > 70) tags.push("Thị trường Trung Quốc");
   if (o.protestRisk > 55) tags.push("Rủi ro biểu tình");
   if (o.whiteElephantRisk > 55) tags.push("Nguy cơ sân trắng");
@@ -167,13 +162,13 @@ function buildMarxistLens(
   let summary = "";
   if (dominant === "Duy vật lịch sử") {
     summary =
-      "Kết quả chủ yếu do thay đổi điều kiện vật chất (hạ tầng, ngân sách).";
+      "Kết quả chủ yếu do tiền và hạ tầng bỏ ra tới đâu quyết định.";
   } else if (dominant === "Phân tích giai cấp") {
     summary =
-      "Phân bổ lợi ích lệch — cần hỏi ai hưởng, ai trả chi phí.";
+      "Lợi ích đang chia không đều — phải hỏi ai được hưởng và ai è cổ trả tiền.";
   } else {
     summary =
-      "Mâu thuẫn giữa tăng trưởng & công bằng đang được cân bằng tương đối.";
+      "Cái được và cái mất đang khá cân bằng, chưa nghiêng hẳn về bên nào.";
   }
 
   return {
@@ -185,87 +180,270 @@ function buildMarxistLens(
   };
 }
 
-function buildTimeline(
+function scoreLevel(v: number): string {
+  if (v >= 65) return "cao";
+  if (v >= 40) return "trung bình";
+  return "thấp";
+}
+
+function riskLevel(v: number): string {
+  if (v >= 55) return "cao";
+  if (v >= 30) return "trung bình";
+  return "thấp";
+}
+
+function pickDrivers(items: MetricDriver[], limit = 4): MetricDriver[] {
+  return items.slice(0, limit);
+}
+
+function buildMetricExplanations(
   c: OverviewConfig,
-  legacy: number,
-  protest: number,
-  brand: number,
-): TimelinePhase[] {
-  const infra = c.infrastructure / 100;
-  const social = c.socialSpend / 100;
+  o: {
+    economicBenefit: number;
+    socialHarmony: number;
+    infrastructureLegacy: number;
+    nationalBrand: number;
+    fifaRevenue: number;
+    hostCostUsd: number;
+    protestRisk: number;
+    whiteElephantRisk: number;
+    inequalityIndex: number;
+  },
+): MetricExplanation[] {
+  const economicDrivers = pickDrivers([
+    {
+      input: "Đầu tư hạ tầng",
+      direction: "tăng",
+      detail: `Càng xây nhiều sân, tàu điện và sân bay thì càng tạo thêm việc làm và hút khách trong lúc diễn ra giải. Bạn đang để mức ${c.infrastructure}.`,
+    },
+    {
+      input: "Ưu tiên du lịch / thương hiệu",
+      direction: "tăng",
+      detail: `Quảng bá hình ảnh kéo khách nước ngoài đến, khách sạn và hàng quán đông hơn — nhưng thường chỉ sôi động trong mùa giải rồi lắng xuống.`,
+    },
+    {
+      input: "Ưu tiên thị trường Trung Quốc",
+      direction: c.chinaPriority > 40 ? "tăng" : "giảm",
+      detail: `Nhắm vào thị trường châu Á giúp bán bản quyền và tài trợ tốt hơn. Nhưng phần lời này chủ yếu về tay FIFA, nước chủ nhà chỉ được hưởng gián tiếp.`,
+    },
+    {
+      input: "Suất vòng loại châu Á",
+      direction: c.asiaSlots > 5 ? "tăng" : "giảm",
+      detail: `Càng nhiều đội châu Á được dự thì khu vực càng quan tâm, kéo theo khách và sự chú ý cho nước chủ nhà.`,
+    },
+    {
+      input: "Chi an sinh xã hội",
+      direction: c.socialSpend > 50 ? "giảm" : "tăng",
+      detail: `Nếu cắt bớt phúc lợi để dồn tiền cho World Cup thì con số kinh tế sự kiện nhích lên, nhưng người dân là bên chịu thiệt.`,
+    },
+  ]);
+
+  const harmonyDrivers = pickDrivers([
+    {
+      input: "Chi an sinh xã hội",
+      direction: "tăng",
+      detail: `Chi cho nhà ở, y tế, lương giúp người dân yên tâm và ít bất mãn hơn. Bạn đang để mức ${c.socialSpend}.`,
+    },
+    {
+      input: "Bảo vệ người lao động",
+      direction: "tăng",
+      detail: `Bảo vệ công nhân tốt (giờ làm, an toàn) thì xã hội êm hơn. Để thấp dễ lặp lại chuyện lao động khổ như ở Qatar.`,
+    },
+    {
+      input: "Đầu tư hạ tầng",
+      direction: "giảm",
+      detail: `Xây quá nhiều thường kéo theo giải tỏa, đội giá nhà và đội vốn — như Brazil 2014 từng bị dân xuống đường phản đối.`,
+    },
+    {
+      input: "Tư nhân tham gia",
+      direction: "giảm",
+      detail: `Để tư nhân nắm phần lớn thì lợi nhuận dồn vào số ít, người dân dễ thấy mình bị bỏ ngoài cuộc.`,
+    },
+  ]);
+
+  const legacyDrivers = pickDrivers([
+    {
+      input: "Đầu tư hạ tầng",
+      direction: c.infrastructure <= 75 ? "tăng" : "giảm",
+      detail:
+        c.infrastructure <= 75
+          ? `Đầu tư vừa phải thì sân và tàu điện còn dùng lâu dài, giống Đức 2006. Bạn đang để mức ${c.infrastructure}.`
+          : `Xây quá tay (mức ${c.infrastructure}) dễ để lại sân bỏ không sau giải, như Manaus hay Cape Town.`,
+    },
+    {
+      input: "Tư nhân tham gia",
+      direction: c.publicPrivate > 50 ? "giảm" : "tăng",
+      detail: `Nhà nước giữ vai trò chính thì dễ tính chuyện dùng lâu dài; tư nhân thường chỉ nhắm lời trước mắt.`,
+    },
+    {
+      input: "Chi an sinh xã hội",
+      direction: "tăng",
+      detail: `Có ngân sách xã hội thì mới đủ tiền bảo trì công trình công cộng sau khi giải kết thúc.`,
+    },
+  ]);
+
+  const brandDrivers = pickDrivers([
+    {
+      input: "Ưu tiên du lịch / thương hiệu",
+      direction: "tăng",
+      detail: `Đầu tư quảng bá giúp hình ảnh đất nước đẹp lên trong mắt thế giới — Đức 2006 đổi được hình ảnh, Qatar dùng giải để đánh bóng tên tuổi.`,
+    },
+    {
+      input: "Đầu tư hạ tầng",
+      direction: "tăng",
+      detail: `Sân và tàu điện hiện đại lên sóng truyền hình toàn cầu, làm nước chủ nhà trông chuyên nghiệp hơn.`,
+    },
+  ]);
+
+  const fifaDrivers = pickDrivers([
+    {
+      input: "Suất vòng loại châu Á",
+      direction: c.asiaSlots > 4 ? "tăng" : "giảm",
+      detail: `Thêm suất cho châu Á thì thêm khán giả và thị trường mới, giúp FIFA bán bản quyền cao hơn.`,
+    },
+    {
+      input: "Ưu tiên thị trường Trung Quốc",
+      direction: c.chinaPriority > 40 ? "tăng" : "giảm",
+      detail: `Trung Quốc có 1,4 tỷ dân — mảnh đất vàng cho quảng cáo và bản quyền. Tiền này gần như FIFA giữ, không phải nước chủ nhà.`,
+    },
+  ]);
+
+  const hostCostDrivers = pickDrivers([
+    {
+      input: "Đầu tư hạ tầng",
+      direction: "tăng",
+      detail:
+        c.infrastructure <= 35
+          ? `Đầu tư thấp thì chi phí gần mức Nam Phi 2010 (khoảng 3,6 tỷ USD) nhờ tận dụng sân có sẵn.`
+          : c.infrastructure <= 75
+            ? `Đầu tư vừa thì chi phí rơi vào khoảng giữa Nam Phi và Brazil, tầm ${o.hostCostUsd.toFixed(1)} tỷ USD cho sân và giao thông.`
+            : `Đầu tư rất lớn thì chi phí vọt lên cỡ Qatar (khoảng ${o.hostCostUsd.toFixed(0)} tỷ USD), vì phải làm cả tàu điện, sân bay, thành phố mới.`,
+    },
+  ]);
+
+  const protestDrivers = pickDrivers([
+    {
+      input: "Đầu tư hạ tầng",
+      direction: "tăng",
+      detail: `Xây càng nhiều càng dễ giải tỏa nhà dân và đội vốn — Brazil từng phải di dời khoảng 250.000 người.`,
+    },
+    {
+      input: "Bảo vệ người lao động",
+      direction: "giảm",
+      detail: `Lo cho người lao động tử tế thì ít căng thẳng và ít biểu tình hơn.`,
+    },
+    {
+      input: "Chi an sinh xã hội",
+      direction: "giảm",
+      detail: `Giữ tiền cho y tế, nhà ở, giáo dục thì dân bớt bức xúc khi thấy tiền đổ vào bóng đá.`,
+    },
+    {
+      input: "Ưu tiên du lịch / thương hiệu",
+      direction: "tăng",
+      detail: `Lo đánh bóng hình ảnh hơn lo cho dân địa phương thì dễ gây phản ứng ngược.`,
+    },
+  ]);
+
+  const whiteElephantDrivers = pickDrivers([
+    {
+      input: "Đầu tư hạ tầng",
+      direction: c.infrastructure < 40 ? "giảm" : "tăng",
+      detail:
+        c.infrastructure < 40
+          ? `Dùng lại sân có sẵn nên ít nguy cơ để lại sân bỏ hoang.`
+          : `Xây nhiều sân mới mà không có đội bóng đủ lớn để lấp đầy thì dễ thành sân bỏ không, như Manaus hay Durban.`,
+    },
+    {
+      input: "Chi an sinh xã hội",
+      direction: "giảm",
+      detail: `Có ngân sách thì mới nuôi nổi sân và tàu điện sau giải, đỡ bỏ hoang.`,
+    },
+    {
+      input: "Tư nhân tham gia",
+      direction: "tăng",
+      detail: `Tư nhân xây nhanh nhưng thường không lo phần bảo trì dài hạn, nên rủi ro bỏ không cao hơn.`,
+    },
+  ]);
+
+  const inequalityDrivers = pickDrivers([
+    {
+      input: "Tư nhân tham gia",
+      direction: "tăng",
+      detail: `Càng nhiều tư nhân thì lợi nhuận (khách sạn, ăn uống, xây dựng) càng dồn vào số ít người.`,
+    },
+    {
+      input: "Bảo vệ người lao động",
+      direction: "giảm",
+      detail: `Bảo vệ người lao động yếu thì phần thiệt dồn về phía công nhân, khoảng cách giàu nghèo giãn ra.`,
+    },
+    {
+      input: "Chi an sinh xã hội",
+      direction: "giảm",
+      detail: `Cắt phúc lợi là đẩy gánh nặng về phía người dân thường.`,
+    },
+    {
+      input: "Đầu tư hạ tầng",
+      direction: "tăng",
+      detail: `Chi rất nhiều tiền nhưng cái lợi lại không chia đều cho mọi người.`,
+    },
+  ]);
 
   return [
     {
-      year: "T0",
-      label: "Đấu thầu",
-      icon: "📋",
-      mood: "mixed",
-      caption: "Hồ sơ $50–150M — thua là mất trắng. Báo cáo thường tô hồng.",
+      id: "economicBenefit",
+      label: "Lợi ích kinh tế",
+      summary: `Đang ở mức ${o.economicBenefit.toFixed(0)} trên 100 (${scoreLevel(o.economicBenefit)}). Chủ yếu đến từ xây hạ tầng và hút du lịch, nhưng lợi ích thường chỉ kéo dài trong mùa giải.`,
+      drivers: economicDrivers,
     },
     {
-      year: "+2y",
-      label: "Xây dựng",
-      icon: "🏗️",
-      mood: infra > 0.7 && social < 0.35 ? "bad" : infra > 0.5 ? "mixed" : "good",
-      caption:
-        infra > 0.7
-          ? "Sân + metro + sân bay — ngân sách dễ đội vốn (Nga: sân +540%)."
-          : "Tái sử dụng sân có sẵn (kiểu Đức / WC 2026).",
+      id: "socialHarmony",
+      label: "Hài hòa xã hội",
+      summary: `Đang ở mức ${o.socialHarmony.toFixed(0)} trên 100 (${scoreLevel(o.socialHarmony)}). Chi cho dân và bảo vệ người lao động thì tăng; xây quá nhiều hoặc để tư nhân nắm thì giảm.`,
+      drivers: harmonyDrivers,
     },
     {
-      year: "+5y",
-      label: "Chuẩn bị",
-      icon: "⚙️",
-      mood: protest > 50 ? "bad" : "mixed",
-      caption:
-        protest > 50
-          ? "Giá nhà, di dời, lao động — biểu tình trước thềm giải (Brazil)."
-          : "An ninh, visa, giao thông chặn cuối — bài học Durban 2010.",
+      id: "infrastructureLegacy",
+      label: "Di sản hạ tầng",
+      summary: `Đang ở mức ${o.infrastructureLegacy.toFixed(0)} trên 100 (${scoreLevel(o.infrastructureLegacy)}). Đầu tư vừa phải thì để lại thứ dùng lâu dài; xây quá tay thì dễ thành sân bỏ không.`,
+      drivers: legacyDrivers,
     },
     {
-      year: "+8y",
-      label: "Thi đấu",
-      icon: "⚽",
-      mood: brand > 60 ? "good" : "mixed",
-      caption: "1 tháng: cú sốc cầu + bản quyền TV toàn cầu (Qatar 2022 ~5 tỷ người xem).",
+      id: "nationalBrand",
+      label: "Thương hiệu quốc gia",
+      summary: `Đang ở mức ${o.nationalBrand.toFixed(0)} trên 100 (${scoreLevel(o.nationalBrand)}). Hình ảnh đất nước lên hay không phụ thuộc vào quảng bá du lịch và quy mô giải.`,
+      drivers: brandDrivers,
     },
     {
-      year: "+10y",
-      label: "Di sản",
-      icon: legacy > 60 ? "🏟️" : "🏚️",
-      mood: legacy > 60 ? "good" : legacy > 40 ? "mixed" : "bad",
-      caption:
-        legacy > 60
-          ? "Metro/sân bay còn phục vụ — di sản thật."
-          : "Nguy cơ voi trắng: sân ế khách, bảo trì hàng năm.",
+      id: "fifaRevenue",
+      label: "FIFA thu",
+      summary: `Khoảng ${o.fifaRevenue.toFixed(1)} tỷ USD mỗi kỳ. Đây là tiền FIFA thu về; nước chủ nhà gần như không được chia phần bản quyền truyền hình.`,
+      drivers: fifaDrivers,
+    },
+    {
+      id: "hostCostUsd",
+      label: "Chi phí nước chủ nhà",
+      summary: `Khoảng ${o.hostCostUsd.toFixed(1)} tỷ USD, ước theo các kỳ thật (Nam Phi 3,6 tỷ đến Qatar 220 tỷ). Đây là tiền nước chủ nhà bỏ ra cho sân, tàu điện, an ninh.`,
+      drivers: hostCostDrivers,
+    },
+    {
+      id: "protestRisk",
+      label: "Rủi ro biểu tình",
+      summary: `Khoảng ${o.protestRisk.toFixed(0)}% (mức ${riskLevel(o.protestRisk)}). Tăng khi xây lớn và lo đánh bóng hình ảnh; giảm khi lo cho dân và người lao động.`,
+      drivers: protestDrivers,
+    },
+    {
+      id: "whiteElephantRisk",
+      label: "Sân trắng",
+      summary: `Khoảng ${o.whiteElephantRisk.toFixed(0)}% (mức ${riskLevel(o.whiteElephantRisk)}). Xây quá nhiều và để tư nhân dẫn dắt thì dễ để lại sân, tàu điện bỏ không sau giải.`,
+      drivers: whiteElephantDrivers,
+    },
+    {
+      id: "inequalityIndex",
+      label: "Bất bình đẳng phân phối",
+      summary: `Đang ở mức ${o.inequalityIndex.toFixed(0)} trên 100 (càng cao càng đáng lo). Nghiêng về tư nhân và cắt phúc lợi thì FIFA và giới đầu tư hưởng lợi, người lao động chịu phần thiệt.`,
+      drivers: inequalityDrivers,
     },
   ];
-}
-
-function buildNarrative(
-  c: OverviewConfig,
-  economic: number,
-  protest: number,
-  fifaRev: number,
-  echo: RealWorldCase,
-  hostCost: number,
-): string {
-  if (protest > 60 && c.infrastructure > 70) {
-    return `Gần ${echo.name}: chi ~$${hostCost.toFixed(1)}B hạ tầng lớn — hình ảnh tăng nhưng dân chịu áp lực (Brazil 2014: biểu tình, di dời). FIFA vẫn thu bản quyền.`;
-  }
-  if (c.infrastructure < 40 && c.teams >= 48) {
-    return `Kiểu WC 2026: tái sử dụng sân, mở rộng 48 đội. FIFA dự thu ~$${fifaRev.toFixed(1)}B — host tiết kiệm xây mới nhưng vẫn tốn cải tạo cỏ, an ninh, visa.`;
-  }
-  if (economic > 65 && protest < 40) {
-    return `Cân bằng tương đối (gần ${echo.name}): kinh tế ${economic}/100, ổn định xã hội ${(100 - protest).toFixed(0)}/100 — hiếm trong lịch sử đăng cai.`;
-  }
-  if (c.teams >= 48 && c.chinaPriority > 60) {
-    return `FIFA tối đa hóa thị trường: ~$${fifaRev.toFixed(1)}B/chu kỳ (docs: thường $7–9B; dự kiến 2023–26 ~$11B). Host gánh sân–metro–an ninh; FIFA nắm TV + sponsor + vé.`;
-  }
-  if (c.infrastructure > 85) {
-    return `Quy mô kiểu Qatar: phần lớn tiền không vào sân mà vào metro/thành phố mới. Soft power cao — rủi ro voi trắng & lao động cũng cao.`;
-  }
-  return `Trade-off thực tế: mỗi slider có người thắng/thua. Gần nhất ${echo.name} (${echo.match}% khớp) — ${echo.blurb}`;
 }
 
 export function computeOverview(config: OverviewConfig): OverviewOutcome {
@@ -274,11 +452,10 @@ export function computeOverview(config: OverviewConfig): OverviewOutcome {
   const social = config.socialSpend / 100;
   const tourism = config.tourismFocus / 100;
   const labor = config.laborProtection / 100;
-  const teamFactor = (config.teams - 32) / 16;
   const china = config.chinaPriority / 100;
 
   const economicBenefit = clamp(
-    infra * 25 + tourism * 30 + teamFactor * 10 + china * 8 + (1 - social) * 5,
+    infra * 25 + tourism * 30 + china * 8 + (1 - social) * 5,
     0,
     100,
   );
@@ -297,17 +474,17 @@ export function computeOverview(config: OverviewConfig): OverviewOutcome {
     100,
   );
 
-  const nationalBrand = clamp(tourism * 40 + infra * 20 + teamFactor * 15, 0, 100);
+  const nationalBrand = clamp(tourism * 40 + infra * 20, 0, 100);
 
   const fifaRevenue = estimateFifaRevenueB({
-    teams: config.teams,
+    teams: MODEL_WC_TEAMS,
     asiaSlots: config.asiaSlots,
     chinaPriority: config.chinaPriority,
   });
 
   const hostCostUsd = estimateHostCostB({
     infrastructure: config.infrastructure,
-    teams: config.teams,
+    teams: MODEL_WC_TEAMS,
   });
 
   const hostBurden = clamp(
@@ -357,48 +534,28 @@ export function computeOverview(config: OverviewConfig): OverviewOutcome {
   const realWorldEcho = matched[0]!;
   const secondaryEchoes = matched.slice(1, 4);
   const marxistLens = buildMarxistLens(config, inequalityIndex, protestRisk);
-  const timeline = buildTimeline(
-    config,
-    infrastructureLegacy,
-    protestRisk,
-    nationalBrand,
-  );
   const tags = buildTags(config, partial);
-  const narrative = buildNarrative(
-    config,
+
+  const metricExplanations = buildMetricExplanations(config, {
     economicBenefit,
-    protestRisk,
+    socialHarmony,
+    infrastructureLegacy,
+    nationalBrand,
     fifaRevenue,
-    realWorldEcho,
     hostCostUsd,
-  );
+    protestRisk,
+    whiteElephantRisk,
+    inequalityIndex,
+  });
 
   return {
     ...partial,
     hostCostUsd,
     tags,
-    narrative,
-    timeline,
     marxistLens,
     realWorldEcho,
     secondaryEchoes,
+    metricExplanations,
   };
 }
 
-export function configFromHost(host: {
-  infrastructure: number;
-  publicPrivate: number;
-  socialPriority: number;
-  stance: string;
-}): OverviewConfig {
-  return {
-    infrastructure: host.infrastructure,
-    publicPrivate: host.publicPrivate,
-    socialSpend: 100 - host.socialPriority,
-    tourismFocus: host.socialPriority,
-    laborProtection: host.stance === "people" ? 70 : 40,
-    teams: 32,
-    asiaSlots: 4,
-    chinaPriority: 40,
-  };
-}

@@ -8,12 +8,12 @@ export const SCROLL_META = {
   brand: "Hostia",
   brandYear: "2034",
   course: "MLN122 · Kinh tế chính trị World Cup",
-  scrollHint: "Cuộn xuống để đọc bản cân",
+  scrollHint: "Cuộn xuống để đọc cán cân",
 } as const;
 
 export const SCROLL_HERO = {
   kicker: "CUỘN SÁCH ĐĂNG CAI",
-  titleLine1: "BẢN CÂN",
+  titleLine1: "CÁN CÂN",
   titleLine2: "WORLD CUP",
   quote:
     "Một tháng bóng đá. Hàng chục — thậm chí hàng trăm — tỷ đô. Ai trả? Ai thu? Ai gánh rủi ro?",
@@ -141,13 +141,25 @@ export const SCROLL_PROFIT = {
       name: "Hàn Quốc 2002",
       expected: "$8.9B",
       actual: "$1.35B",
-      note: "Thực tế ~15% kỳ vọng lợi ích kinh tế",
+      note: "Thực tế ~15% kỳ vọng (Dentsu; docs MLN122)",
     },
     {
       name: "Nam Phi 2010",
       expected: "$6–12B",
       actual: "~$0.3B",
-      note: "Thấp hơn 30–40 lần; nghiên cứu ETH: đầu tư công ~17× ước ban đầu",
+      note: "Thấp hơn 30–40 lần; ETH: đầu tư công ~17× ước ban đầu",
+    },
+    {
+      name: "Brazil 2014",
+      expected: "$9–15B",
+      actual: "~$2.4B",
+      note: "Chi gấp ~5 lần; GDP 2014 chỉ +0.5%",
+    },
+    {
+      name: "Nga 2018",
+      expected: "$26–31B",
+      actual: "~$14.5B*",
+      note: "*LOC chính phủ; học giả ước du lịch ~$1B",
     },
   ],
   points: [
@@ -354,7 +366,7 @@ export const SCROLL_HARMS = {
 
 export const SCROLL_LESSONS = {
   chapter: "— BÀI HỌC —",
-  title: "Đọc bản cân như thế nào?",
+  title: "Đọc cán cân như thế nào?",
   items: [
     {
       index: "01",
@@ -385,5 +397,4 @@ export const SCROLL_CLOSE = {
   titleLine1: "Bạn chọn",
   titleLine2: "phía nào?",
   ctaPrimary: "Khám phá số liệu & kéo slider",
-  ctaSecondary: "Mô phỏng 9 lượt đăng cai",
 } as const;

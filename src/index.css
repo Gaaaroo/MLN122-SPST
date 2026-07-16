@@ -988,6 +988,35 @@ input[type="range"] {
   color: #93c5fd;
 }
 
+.ov-expansion-callout {
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--blue);
+  border-radius: 10px;
+  padding: 0.75rem 0.85rem;
+  margin-bottom: 0.85rem;
+}
+
+.ov-expansion-callout h4 {
+  font-size: 0.82rem;
+  color: var(--text);
+  margin: 0 0 0.45rem;
+}
+
+.ov-expansion-callout ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.ov-expansion-callout li {
+  font-size: 0.72rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
 .ov-metrics-grid {
   display: flex;
   flex-direction: column;
@@ -1022,11 +1051,158 @@ input[type="range"] {
   margin-top: 0.25rem;
 }
 
+.ov-outcomes-lead {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin: -0.25rem 0 1rem;
+  line-height: 1.45;
+}
+
+.ov-metric-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Hover / focus "Vì sao?" tooltip */
+.ov-why {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: help;
+  outline: none;
+}
+
+.ov-why-trigger {
+  font-size: 0.66rem;
+  font-weight: 600;
+  color: var(--cyan);
+  border: 1px solid rgba(6, 182, 212, 0.4);
+  border-radius: 999px;
+  padding: 0.05rem 0.5rem;
+  white-space: nowrap;
+  text-transform: none;
+  letter-spacing: 0;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.ov-why:hover .ov-why-trigger,
+.ov-why:focus-visible .ov-why-trigger {
+  background: rgba(6, 182, 212, 0.14);
+  border-color: var(--cyan);
+}
+
+.ov-why-pop {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 30;
+  width: min(320px, 78vw);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.75rem 0.8rem;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
+  text-align: left;
+  white-space: normal;
+}
+
+.ov-why:hover .ov-why-pop,
+.ov-why:focus-within .ov-why-pop,
+.ov-why:focus-visible .ov-why-pop {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.ov-why-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--cyan);
+}
+
+.ov-why-summary {
+  font-size: 0.76rem;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.ov-why-drivers {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  border-top: 1px solid var(--border);
+  padding-top: 0.5rem;
+}
+
+.ov-why-driver {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.73rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.ov-why-tag {
+  align-self: flex-start;
+  font-size: 0.62rem;
+  font-weight: 700;
+  border-radius: 4px;
+  padding: 0.05rem 0.4rem;
+}
+
+.ov-why-up .ov-why-tag {
+  background: rgba(52, 211, 153, 0.16);
+  color: var(--green);
+}
+
+.ov-why-down .ov-why-tag {
+  background: rgba(248, 113, 113, 0.16);
+  color: var(--red);
+}
+
+.ov-why-driver-text strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* Popover trong mini-card mở sang phải để không bị tràn */
+.ov-mini-card .ov-why-pop {
+  left: auto;
+  right: 0;
+}
+
 .ov-split-cards {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 0.5rem;
   margin-bottom: 1.25rem;
+  position: relative;
+}
+
+.ov-mini-card {
+  position: relative;
+}
+
+.ov-mini-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+}
+
+@media (max-width: 560px) {
+  .ov-split-cards {
+    grid-template-columns: 1fr;
+  }
 }
 
 .ov-mini-card {
@@ -1107,6 +1283,108 @@ input[type="range"] {
   color: var(--muted);
   margin: 0.75rem 0;
   line-height: 1.5;
+}
+
+/* Banner khung lăng kính MLN — đầu dashboard */
+.ov-mln-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin-bottom: 1.25rem;
+  padding: 0.9rem 1.1rem;
+  border-radius: 14px;
+  background: linear-gradient(
+    100deg,
+    rgba(6, 182, 212, 0.14),
+    rgba(6, 182, 212, 0.04)
+  );
+  border: 1px solid rgba(6, 182, 212, 0.35);
+}
+
+.ov-mln-banner-icon {
+  font-size: 1.7rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.ov-mln-banner-text h2 {
+  font-size: 1rem;
+  margin: 0 0 0.25rem;
+  color: var(--text);
+}
+
+.ov-mln-banner-text p {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.45;
+}
+
+.ov-mln-banner-text strong {
+  color: var(--cyan);
+}
+
+/* Chú thích cán cân giai cấp dưới cặp ô thu / trả */
+.ov-mln-contrast {
+  position: relative;
+  margin: 0 0 1.25rem;
+  padding: 0.7rem 0.85rem;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--muted);
+  background: rgba(248, 113, 113, 0.07);
+  border-left: 3px solid var(--red);
+  border-radius: 8px;
+}
+
+.ov-mln-contrast-tag {
+  display: inline-block;
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--red);
+  margin-right: 0.5rem;
+}
+
+.ov-mln-contrast strong {
+  color: var(--text);
+}
+
+.ov-mln-links {
+  margin-top: 1rem;
+  padding: 0.9rem 1rem;
+  border-radius: 12px;
+  background: rgba(6, 182, 212, 0.06);
+  border: 1px solid rgba(6, 182, 212, 0.25);
+}
+
+.ov-mln-links h4 {
+  font-size: 0.88rem;
+  color: var(--cyan);
+  margin: 0 0 0.7rem;
+}
+
+.ov-mln-links ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ov-mln-links li {
+  font-size: 0.76rem;
+  line-height: 1.5;
+  color: var(--muted);
+  padding-left: 0.7rem;
+  border-left: 2px solid rgba(6, 182, 212, 0.35);
+}
+
+.ov-mln-links li strong {
+  color: var(--text);
+  font-weight: 600;
 }
 
 .ov-echo-primary {
@@ -1325,10 +1603,18 @@ input[type="range"] {
   margin-bottom: 0;
 }
 
+.facts-gap-sources {
+  margin-top: 0.65rem;
+  font-size: 0.68rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
 .gap-table {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
   gap: 0.65rem;
+  align-items: start;
 }
 
 .gap-row {
@@ -1340,17 +1626,16 @@ input[type="range"] {
 
 .gap-name {
   font-weight: 600;
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.5rem;
 }
 
 .gap-nums {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem;
-  font-family: var(--mono, ui-monospace, monospace);
-  font-size: 0.85rem;
-  margin-bottom: 0.35rem;
+  align-items: baseline;
+  gap: 0.3rem 1rem;
+  font-size: 0.82rem;
+  margin-bottom: 0.45rem;
 }
 
 .gap-expected {
@@ -1361,13 +1646,20 @@ input[type="range"] {
   color: var(--red, #f87171);
 }
 
-.gap-arrow {
+.gap-tag {
+  display: inline-block;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
   color: var(--muted);
+  margin-right: 0.35rem;
 }
 
 .gap-note {
   font-size: 0.78rem;
   color: var(--muted);
+  line-height: 1.5;
 }
 
 

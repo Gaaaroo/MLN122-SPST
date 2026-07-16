@@ -17,7 +17,7 @@
 
 Đó là số tiền các nước chủ nhà World Cup đã phải chi để tổ chức một giải bóng đá kéo dài **một tháng**.
 
-### Đặt lên bản cân kinh tế
+### Đặt lên cán cân kinh tế
 
 - **3,6 tỷ USD (2010)** lớn hơn nền kinh tế khoảng 40 quốc gia và vùng lãnh thổ lúc bấy giờ — tương đương xấp xỉ tổng GDP của **Bhutan** và **Lesotho** (Lesotho là quốc gia nằm hoàn toàn trong lãnh thổ Nam Phi).
 - **15 tỷ USD (2014)** dư sức tài trợ các dự án UNICEF mang nước sạch và vệ sinh cơ bản cho hơn 100 triệu người tại vùng khủng hoảng châu Phi và Nam Á; gấp gần **ba lần** ngân sách hoạt động hàng năm của Chương trình Lương thực Thế giới (WFP) tại thời điểm đó — đủ cung cấp lương thực cứu đói cho hơn 80 triệu người trong vùng chiến sự hoặc thiên tai suốt một năm.

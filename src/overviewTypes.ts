@@ -4,9 +4,21 @@ export interface OverviewConfig {
   socialSpend: number;
   tourismFocus: number;
   laborProtection: number;
-  teams: 32 | 48;
   asiaSlots: number;
   chinaPriority: number;
+}
+
+export interface MetricDriver {
+  input: string;
+  direction: "tăng" | "giảm";
+  detail: string;
+}
+
+export interface MetricExplanation {
+  id: string;
+  label: string;
+  summary: string;
+  drivers: MetricDriver[];
 }
 
 export interface OverviewOutcome {
@@ -25,19 +37,10 @@ export interface OverviewOutcome {
   inequalityIndex: number;
   dialecticBalance: number;
   tags: string[];
-  narrative: string;
-  timeline: TimelinePhase[];
   marxistLens: MarxistAlignment;
   realWorldEcho: RealWorldCase;
   secondaryEchoes: RealWorldCase[];
-}
-
-export interface TimelinePhase {
-  year: string;
-  label: string;
-  icon: string;
-  mood: "good" | "mixed" | "bad";
-  caption: string;
+  metricExplanations: MetricExplanation[];
 }
 
 export interface MarxistAlignment {
@@ -70,8 +73,7 @@ export const DEFAULT_OVERVIEW: OverviewConfig = {
   socialSpend: 50,
   tourismFocus: 50,
   laborProtection: 50,
-  teams: 32,
-  asiaSlots: 4,
+  asiaSlots: 6,
   chinaPriority: 40,
 };
 
@@ -85,7 +87,6 @@ export const OVERVIEW_PRESETS: OverviewPreset[] = [
       socialSpend: 65,
       tourismFocus: 55,
       laborProtection: 70,
-      teams: 32,
       asiaSlots: 4,
       chinaPriority: 20,
     },
@@ -99,7 +100,6 @@ export const OVERVIEW_PRESETS: OverviewPreset[] = [
       socialSpend: 25,
       tourismFocus: 70,
       laborProtection: 30,
-      teams: 32,
       asiaSlots: 4,
       chinaPriority: 25,
     },
@@ -113,21 +113,19 @@ export const OVERVIEW_PRESETS: OverviewPreset[] = [
       socialSpend: 20,
       tourismFocus: 85,
       laborProtection: 15,
-      teams: 32,
       asiaSlots: 4,
       chinaPriority: 35,
     },
   },
   {
     id: "fifa-max",
-    label: "FIFA tối đa (48 đội)",
+    label: "Thị trường châu Á max",
     config: {
       infrastructure: 75,
       publicPrivate: 60,
       socialSpend: 35,
       tourismFocus: 80,
       laborProtection: 40,
-      teams: 48,
       asiaSlots: 8,
       chinaPriority: 85,
     },
@@ -141,7 +139,6 @@ export const OVERVIEW_PRESETS: OverviewPreset[] = [
       socialSpend: 85,
       tourismFocus: 30,
       laborProtection: 80,
-      teams: 32,
       asiaSlots: 4,
       chinaPriority: 30,
     },
@@ -155,7 +152,6 @@ export const OVERVIEW_PRESETS: OverviewPreset[] = [
       socialSpend: 45,
       tourismFocus: 70,
       laborProtection: 55,
-      teams: 48,
       asiaSlots: 8,
       chinaPriority: 50,
     },
@@ -169,7 +165,7 @@ export const REAL_WORLD_CASES: RealWorldCase[] = [
     year: "2006",
     match: 0,
     blurb:
-      "Tái sử dụng sân; chiến dịch soft power 'Thế giới làm khách' — đổi hình ảnh cứng nhắc thành thân thiện. Docs không ghi một tổng chi phí duy nhất.",
+      "Dùng lại sân có sẵn, làm chiến dịch 'Thế giới làm khách' để đổi hình ảnh cứng nhắc thành thân thiện. Tài liệu không ghi một con số tổng chi phí.",
   },
   {
     id: "south-africa-2010",
@@ -178,7 +174,7 @@ export const REAL_WORLD_CASES: RealWorldCase[] = [
     match: 0,
     hostCostUsd: 3.6,
     blurb:
-      "Chi ~$3.6B. Kỳ vọng lợi ích $6–12B → thực tế ~$0.3B. Durban tắc đường; Cape Town ế khách cả thập kỷ.",
+      "Chi khoảng 3,6 tỷ. Kỳ vọng lời 6–12 tỷ nhưng thực tế chỉ khoảng 0,3 tỷ. Durban tắc đường, Cape Town ế khách cả chục năm.",
   },
   {
     id: "brazil-2014",
@@ -187,7 +183,7 @@ export const REAL_WORLD_CASES: RealWorldCase[] = [
     match: 0,
     hostCostUsd: 15.0,
     blurb:
-      "~$15B, lạm phát 6.5%, ~250.000 người di dời. Arena da Amazônia = voi trắng giữa rừng Amazon.",
+      "Khoảng 15 tỷ, lạm phát 6,5%, chừng 250.000 người bị di dời. Sân Arena da Amazônia thành sân bỏ hoang giữa rừng Amazon.",
   },
   {
     id: "russia-2018",
@@ -196,7 +192,7 @@ export const REAL_WORLD_CASES: RealWorldCase[] = [
     match: 0,
     hostCostUsd: 11.6,
     blurb:
-      "~$11.6B. 11 sân bay nâng cấp. Saint Petersburg đội vốn sân ~540%. Chặn >25 triệu tấn công mạng.",
+      "Khoảng 11,6 tỷ, nâng cấp 11 sân bay. Riêng sân ở Saint Petersburg đội vốn hơn 5 lần. Chặn hơn 25 triệu vụ tấn công mạng.",
   },
   {
     id: "qatar-2022",
@@ -205,7 +201,7 @@ export const REAL_WORLD_CASES: RealWorldCase[] = [
     match: 0,
     hostCostUsd: 220.0,
     blurb:
-      "~$220B (metro $36B, Lusail $45B, sân ~$7B). Soft power Vision 2030 — sân 974 lời hứa tháo dỡ chưa thành.",
+      "Khoảng 220 tỷ (tàu điện 36 tỷ, thành phố Lusail 45 tỷ, sân khoảng 7 tỷ). Dùng giải để quảng bá đất nước; sân 974 hứa tháo dỡ nhưng chưa làm.",
   },
   {
     id: "wc-2026",
@@ -213,6 +209,6 @@ export const REAL_WORLD_CASES: RealWorldCase[] = [
     year: "2026",
     match: 0,
     blurb:
-      "16 sân có sẵn (11+3+2), 48 đội, Mỹ ~78 trận. FIFA dự thu ~$11B. Oxford: GDP Mỹ +$17.2B; liên minh ~$40.9B (dự phóng — không phải hóa đơn xây sân).",
+      "16 sân có sẵn (11+3+2), 48 đội, Mỹ tổ chức khoảng 78 trận. FIFA dự thu khoảng 11 tỷ. Có dự báo GDP Mỹ tăng 17,2 tỷ, cả ba nước khoảng 40,9 tỷ — nhưng đây chỉ là dự đoán, không phải hóa đơn xây sân.",
   },
 ];

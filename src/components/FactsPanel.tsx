@@ -2,6 +2,7 @@ import { useState } from "react";
 import {
   COST_CATEGORIES,
   EXPECTATION_GAP,
+  EXPECTATION_GAP_SOURCES,
   FIFA_REVENUE,
   FIFA_STADIUM_CAPACITY,
   HOST_BENEFITS,
@@ -14,7 +15,7 @@ import {
 type Tab = "shock" | "costs" | "benefits" | "gap";
 
 const TABS: { id: Tab; label: string }[] = [
-  { id: "shock", label: "Số liệu shock" },
+  { id: "shock", label: "Số liệu" },
   { id: "costs", label: "Chi tiền gì?" },
   { id: "benefits", label: "Được gì?" },
   { id: "gap", label: "Kỳ vọng vs thật" },
@@ -33,12 +34,12 @@ export default function FactsPanel({ liveHostCostB, compact }: Props) {
     <section className={`facts-panel ${compact ? "facts-compact" : ""}`}>
       <div className="facts-head">
         <div>
-          <h2>World Cup thật sự tốn gì — và vì sao vẫn tranh đăng cai?</h2>
+          <h2>World Cup thật sự tốn bao nhiêu — và vì sao ai cũng muốn đăng cai?</h2>
           <p className="facts-sub">
-            Số liệu lịch sử: $
-            {HOST_COST_BY_EDITION.SOUTH_AFRICA_2010}B (2010) → $
-            {HOST_COST_BY_EDITION.QATAR_2022_TOTAL}B (2022) cho ~1 tháng bóng đá.
-            FIFA dự thu chu kỳ 2026 ~${FIFA_REVENUE.CYCLE_2023_2026_PROJECTED}B.
+            Chi phí đăng cai đã tăng từ {HOST_COST_BY_EDITION.SOUTH_AFRICA_2010} tỷ USD
+            (Nam Phi 2010) lên {HOST_COST_BY_EDITION.QATAR_2022_TOTAL} tỷ USD (Qatar 2022) —
+            chỉ cho một tháng bóng đá. Trong khi đó FIFA thu về khoảng{" "}
+            {FIFA_REVENUE.CYCLE_2023_2026_PROJECTED} tỷ USD mỗi kỳ.
           </p>
         </div>
         {liveHostCostB !== undefined && (
@@ -87,16 +88,16 @@ export default function FactsPanel({ liveHostCostB, compact }: Props) {
           ))}
           <article className="fact-card cost-card fact-stadium-std">
             <div className="fact-icon">📏</div>
-            <h3>Chuẩn sức chứa FIFA</h3>
+            <h3>Sân phải to cỡ nào?</h3>
             <p>
-              Vòng bảng ≥{FIFA_STADIUM_CAPACITY.GROUP.toLocaleString("vi-VN")} chỗ ·
-              Bán kết ≥{FIFA_STADIUM_CAPACITY.SEMI.toLocaleString("vi-VN")} · Chung kết ≥
-              {FIFA_STADIUM_CAPACITY.FINAL.toLocaleString("vi-VN")}. Ghế VIP rộng ≥
-              {FIFA_STADIUM_CAPACITY.VIP_SEAT_WIDTH_CM}cm (thường ~
-              {FIFA_STADIUM_CAPACITY.NORMAL_SEAT_WIDTH_CM}cm).
+              Vòng bảng ít nhất {FIFA_STADIUM_CAPACITY.GROUP.toLocaleString("vi-VN")} chỗ,
+              bán kết {FIFA_STADIUM_CAPACITY.SEMI.toLocaleString("vi-VN")}, chung kết{" "}
+              {FIFA_STADIUM_CAPACITY.FINAL.toLocaleString("vi-VN")}. Ghế VIP rộng ít nhất{" "}
+              {FIFA_STADIUM_CAPACITY.VIP_SEAT_WIDTH_CM}cm, trong khi ghế thường chỉ khoảng{" "}
+              {FIFA_STADIUM_CAPACITY.NORMAL_SEAT_WIDTH_CM}cm.
             </p>
             <p className="fact-example">
-              Việt Nam: Mỹ Đình chỉ đủ chuẩn vòng bảng tối thiểu.
+              Ở Việt Nam, sân Mỹ Đình mới chỉ vừa đủ chuẩn vòng bảng.
             </p>
           </article>
         </div>
@@ -117,35 +118,45 @@ export default function FactsPanel({ liveHostCostB, compact }: Props) {
       {tab === "gap" && (
         <div className="facts-gap">
           <p className="facts-gap-intro">
-            Báo cáo đấu thầu thường lạc quan để thắng phiếu — kinh tế gọi là{" "}
-            <strong>lời nguyền kẻ chiến thắng</strong>. Dự báo làm trước giải 8–10 năm,
-            dễ lệch vì lạm phát, tham nhũng, đội vốn.
+            Để thắng quyền đăng cai, các nước thường vẽ ra con số lợi ích thật đẹp. Nhưng dự
+            báo làm trước giải cả chục năm nên hay lệch xa vì lạm phát, đội vốn và tham nhũng.
+            Dưới đây là lời hứa so với thực tế:
           </p>
           <div className="gap-table">
-            {EXPECTATION_GAP.map((g) => (
-              <div key={g.id} className="gap-row">
-                <div className="gap-name">{g.name}</div>
-                <div className="gap-nums">
-                  <span className="gap-expected">
-                    Kỳ vọng ~${g.expectedB}B
-                    {"expectedRange" in g && g.expectedRange
-                      ? ` (${g.expectedRange})`
-                      : ""}
-                  </span>
-                  <span className="gap-arrow">→</span>
-                  <span className="gap-actual">Thực tế ~${g.actualB}B</span>
+            {EXPECTATION_GAP.map((g) => {
+              const expectedText = g.expectedRange
+                ? g.expectedRange
+                : g.expectedB !== undefined
+                  ? `khoảng ${g.expectedB} tỷ USD`
+                  : "—";
+              const actualText =
+                g.actualNote ??
+                g.actualRange ??
+                (g.actualB !== undefined ? `khoảng ${g.actualB} tỷ USD` : "—");
+
+              return (
+                <div key={g.id} className="gap-row">
+                  <div className="gap-name">{g.name}</div>
+                  <div className="gap-nums">
+                    <span className="gap-expected">
+                      <span className="gap-tag">Kỳ vọng</span> {expectedText}
+                    </span>
+                    <span className="gap-actual">
+                      <span className="gap-tag">Thực tế</span> {actualText}
+                    </span>
+                  </div>
+                  <div className="gap-note">{g.note}</div>
                 </div>
-                <div className="gap-note">{g.note}</div>
-              </div>
-            ))}
+              );
+            })}
           </div>
+          <p className="facts-gap-sources">Nguồn: {EXPECTATION_GAP_SOURCES}</p>
           <p className="facts-gap-foot">
-            WC 2026 thử phá lời nguyền: {TOURNAMENT_FORMAT.WC2026_STADIUMS} sân có sẵn (
-            {TOURNAMENT_FORMAT.WC2026_USA_STADIUMS}+
-            {TOURNAMENT_FORMAT.WC2026_MEXICO_STADIUMS}+
-            {TOURNAMENT_FORMAT.WC2026_CANADA_STADIUMS}), Mỹ ôm ~
-            {TOURNAMENT_FORMAT.WC2026_USA_MATCHES} trận — nhưng vẫn còn rủi ro giá vé, visa,
-            địa chính trị.
+            World Cup 2026 cố làm khác: dùng {TOURNAMENT_FORMAT.WC2026_STADIUMS} sân có sẵn
+            (Mỹ {TOURNAMENT_FORMAT.WC2026_USA_STADIUMS}, Mexico{" "}
+            {TOURNAMENT_FORMAT.WC2026_MEXICO_STADIUMS}, Canada{" "}
+            {TOURNAMENT_FORMAT.WC2026_CANADA_STADIUMS}), Mỹ tổ chức phần lớn số trận — nhưng
+            vẫn còn lo giá vé, visa và căng thẳng chính trị.
           </p>
         </div>
       )}

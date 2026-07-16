@@ -15,7 +15,6 @@ import {
 
 interface Props {
   onExplore: () => void;
-  onSimulate: () => void;
 }
 
 function SplitTitle({ line1, line2 }: { line1: string; line2: string }) {
@@ -47,7 +46,7 @@ function ChapterHead({
   );
 }
 
-export function StoryLanding({ onExplore, onSimulate }: Props) {
+export function StoryLanding({ onExplore }: Props) {
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -362,16 +361,7 @@ export function StoryLanding({ onExplore, onSimulate }: Props) {
             <button type="button" className="btn-primary" onClick={onExplore}>
               {SCROLL_CLOSE.ctaPrimary}
             </button>
-            <button type="button" className="btn-secondary" onClick={onSimulate}>
-              {SCROLL_CLOSE.ctaSecondary}
-            </button>
           </div>
-          <p className="scroll-credit">
-            Nguồn: docs MLN122 · FIFA Annual Report · Statista · nghiên cứu ETH/ESPN ·{" "}
-            <a href="https://mln-su2026.pages.dev/" target="_blank" rel="noreferrer">
-              cảm hứng UI mln-su2026
-            </a>
-          </p>
         </div>
       </section>
     </div>

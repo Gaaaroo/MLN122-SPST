@@ -6,10 +6,9 @@ import {
 
 interface Props {
   onExplore: () => void;
-  onSimulate: () => void;
 }
 
-export function LandingScreen({ onExplore, onSimulate }: Props) {
+export function LandingScreen({ onExplore }: Props) {
   return (
     <div className="landing">
       <p className="landing-kicker">MLN122 · Kinh tế chính trị · World Cup</p>
@@ -55,13 +54,10 @@ export function LandingScreen({ onExplore, onSimulate }: Props) {
         <button type="button" className="btn-primary" onClick={onExplore}>
           Khám phá số liệu + kéo slider
         </button>
-        <button type="button" className="btn-secondary" onClick={onSimulate}>
-          Mô phỏng 9 lượt đăng cai
-        </button>
       </div>
       <p className="landing-hint">
-        <strong>Tổng quan</strong> — đọc case thật (Đức → Qatar → 2026), rồi tự thiết kế
-        kịch bản · <strong>9 lượt</strong> — đóng vai chính phủ nước chủ nhà
+        Đọc case thật (Đức → Qatar → 2026), kéo slider — xem ai thắng, ai trả trên bảng phân
+        phối.
       </p>
       <p className="footer-note">
         Soft power · Sân trắng (voi trắng) · Nhượng quyền FIFA · 48 đội 2026
