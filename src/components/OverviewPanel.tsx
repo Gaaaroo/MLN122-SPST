@@ -18,6 +18,7 @@ import { Slider } from "./Slider";
 interface Props {
   initial?: Partial<OverviewConfig>;
   onBack: () => void;
+  onPlayGame?: () => void;
 }
 
 function WhyHint({ explain }: { explain: MetricExplanation }) {
@@ -96,7 +97,7 @@ function LensBar({ label, value }: { label: string; value: number }) {
   );
 }
 
-export default function OverviewPanel({ initial, onBack }: Props) {
+export default function OverviewPanel({ initial, onBack, onPlayGame }: Props) {
   const [config, setConfig] = useState<OverviewConfig>({
     ...DEFAULT_OVERVIEW,
     ...initial,
@@ -128,6 +129,11 @@ export default function OverviewPanel({ initial, onBack }: Props) {
           </p>
         </div>
         <div className="overview-header-actions">
+          {onPlayGame && (
+            <button type="button" className="btn-ghost" onClick={onPlayGame}>
+              🎲 Chơi cờ tỷ phú
+            </button>
+          )}
           <button
             type="button"
             className="btn-ghost"

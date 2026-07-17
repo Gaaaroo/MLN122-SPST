@@ -1,1 +1,1 @@
-export type Screen = "landing" | "overview";
+export type Screen = "landing" | "overview" | "boardgame";

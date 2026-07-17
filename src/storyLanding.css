@@ -72,6 +72,30 @@
   background: rgba(244, 240, 232, 0.08);
 }
 
+.scroll-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  pointer-events: auto;
+}
+
+.scroll-topbar-ghost {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--sb-ink);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.45rem 0.7rem;
+  border-radius: 0;
+  opacity: 0.8;
+}
+
+.scroll-topbar-ghost:hover {
+  opacity: 1;
+  border-color: rgba(244, 240, 232, 0.25);
+}
+
 /* Reveal */
 [data-reveal] {
   opacity: 0;

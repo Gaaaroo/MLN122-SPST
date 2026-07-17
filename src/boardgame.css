@@ -1,0 +1,854 @@
+/* "Đường đến World Cup" — cờ tỷ phú 4 người. Dùng token dark-cyan của index.css. */
+
+.bg-page {
+  min-height: 100vh;
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 3rem;
+}
+
+.bg-topbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.bg-topbar > div {
+  flex: 1 1 260px;
+}
+
+.bg-h1 {
+  font-size: 1.6rem;
+  margin-top: 0.5rem;
+}
+
+.bg-sub {
+  color: var(--muted);
+  font-size: 0.92rem;
+  margin-top: 0.25rem;
+}
+
+.bg-section-title {
+  font-size: 1.15rem;
+  margin-bottom: 1rem;
+}
+
+/* ---------- SETUP ---------- */
+.bg-archetype-legend {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.bg-legend-card h3 {
+  font-size: 1rem;
+  color: var(--cyan);
+}
+
+.bg-legend-budget {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  color: var(--text);
+  margin: 0.35rem 0;
+}
+
+.bg-legend-blurb {
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.bg-setup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.bg-setup-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.bg-name-input {
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 0.5rem 0.7rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  width: 140px;
+}
+
+.bg-name-input:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 1px;
+}
+
+.bg-archetype-pick {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.bg-arch-btn {
+  background: var(--panel2);
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.82rem;
+}
+
+.bg-arch-btn:hover {
+  color: var(--text);
+  border-color: var(--muted);
+}
+
+.bg-arch-btn.active {
+  background: rgba(6, 182, 212, 0.15);
+  color: var(--cyan);
+  border-color: var(--cyan);
+}
+
+.bg-length {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+.bg-length-label {
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.bg-start {
+  margin-top: 0.75rem;
+  align-self: flex-start;
+}
+
+/* ---------- TOKENS ---------- */
+.bg-token {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  color: #07121c;
+  font-weight: 700;
+  font-size: 0.82rem;
+  flex-shrink: 0;
+}
+
+.bg-token.sm {
+  width: 20px;
+  height: 20px;
+  font-size: 0.72rem;
+}
+
+/* ---------- PLAYING: topbar meta ---------- */
+.bg-turnmeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.bg-turn-count {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.bg-turn-now {
+  font-size: 1.05rem;
+}
+
+.bg-fifa-pill {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: var(--red);
+  border-radius: 999px;
+  padding: 0.45rem 1rem;
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ---------- BOARD ---------- */
+.bg-board {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.bg-tile {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.55rem 0.4rem;
+  min-height: 92px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.2rem;
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition),
+    transform var(--transition);
+}
+
+.bg-tile.active {
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 1px var(--cyan), 0 6px 18px rgba(6, 182, 212, 0.2);
+  transform: translateY(-2px);
+}
+
+.bg-tile-icon {
+  font-size: 1.35rem;
+}
+
+.bg-tile-label {
+  font-size: 0.68rem;
+  color: var(--muted);
+  line-height: 1.2;
+}
+
+.bg-tokens {
+  display: flex;
+  gap: 0.2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: auto;
+  min-height: 20px;
+}
+
+/* ---------- PLAYERS ---------- */
+.bg-players {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.6rem;
+  margin-bottom: 1.25rem;
+}
+
+.bg-player {
+  border-top: 3px solid var(--border);
+  opacity: 0.72;
+  transition: opacity var(--transition), box-shadow var(--transition);
+}
+
+.bg-player.active {
+  opacity: 1;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+
+.bg-player h4 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.bg-pstats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.3rem 0.6rem;
+  font-size: 0.82rem;
+  color: var(--text);
+}
+
+.bg-pstats .neg {
+  color: var(--red);
+  font-weight: 600;
+}
+
+.bg-pnet {
+  grid-column: 1 / -1;
+  font-family: var(--mono);
+  color: var(--cyan);
+  font-weight: 600;
+  border-top: 1px solid var(--border);
+  padding-top: 0.3rem;
+  margin-top: 0.15rem;
+}
+
+/* ---------- ACTION ---------- */
+.bg-action {
+  min-height: 140px;
+}
+
+.bg-action-lead {
+  font-size: 1.02rem;
+  margin-bottom: 0.5rem;
+}
+
+.bg-tile-blurb {
+  color: var(--muted);
+  font-size: 0.86rem;
+  margin-bottom: 0.9rem;
+}
+
+.bg-roll {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.5rem 0;
+}
+
+.bg-dice-btn {
+  font-size: 1.1rem;
+}
+
+.bg-die {
+  font-size: 1.5rem;
+  color: var(--cyan);
+  vertical-align: -2px;
+}
+
+.bg-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.6rem;
+}
+
+.bg-option {
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.8rem;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  color: var(--text);
+}
+
+.bg-option:hover {
+  border-color: var(--cyan);
+  transform: translateY(-2px);
+}
+
+.bg-option-label {
+  font-weight: 600;
+}
+
+.bg-option-cost {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  color: var(--yellow);
+}
+
+.bg-option-effect {
+  font-size: 0.82rem;
+  color: var(--green);
+}
+
+.bg-option-hint {
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.bg-result {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.8rem;
+}
+
+.bg-result-log {
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+.bg-card {
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--yellow);
+  border-radius: 10px;
+  padding: 0.9rem 1rem;
+  width: 100%;
+}
+
+.bg-card-tag {
+  display: inline-block;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--yellow);
+  margin-bottom: 0.3rem;
+}
+
+.bg-card h4 {
+  font-size: 1.05rem;
+  margin-bottom: 0.35rem;
+}
+
+.bg-card p {
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.bg-card-effect {
+  color: var(--text) !important;
+  font-family: var(--mono);
+  font-size: 0.82rem !important;
+  margin-top: 0.5rem;
+}
+
+/* ---------- END SCREEN ---------- */
+.bg-end-ranking {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 1.25rem;
+}
+
+.bg-rank {
+  border-left: 3px solid var(--border);
+}
+
+.bg-rank.win {
+  border-left-color: var(--green);
+  box-shadow: 0 6px 22px rgba(34, 197, 94, 0.16);
+}
+
+.bg-rank-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.bg-rank-pos {
+  font-size: 1.15rem;
+  font-weight: 700;
+  min-width: 2rem;
+}
+
+.bg-rank-name {
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.bg-rank-arch {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.bg-rank-net {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--cyan);
+}
+
+.bg-breakdown {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-top: 0.6rem;
+}
+
+.bg-chip {
+  font-size: 0.76rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  font-family: var(--mono);
+}
+
+.bg-chip.up {
+  background: rgba(34, 197, 94, 0.12);
+  color: var(--green);
+}
+
+.bg-chip.down {
+  background: rgba(239, 68, 68, 0.12);
+  color: var(--red);
+}
+
+.bg-punchline {
+  border-left: 3px solid var(--red);
+  margin-bottom: 1.25rem;
+}
+
+.bg-punchline h3 {
+  color: var(--red);
+  font-family: var(--mono);
+  margin-bottom: 0.4rem;
+}
+
+.bg-punchline p {
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.bg-end-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* ---------- RING BOARD (kiểu Monopoly) ---------- */
+.bg-play {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 1rem;
+  align-items: start;
+}
+
+.bg-play-board {
+  min-width: 0;
+}
+
+.bg-play .bg-players {
+  grid-template-columns: 1fr;
+  margin-bottom: 0;
+}
+
+.bg-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.9rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.76rem;
+  color: var(--muted);
+}
+
+.bg-legend span {
+  white-space: nowrap;
+}
+
+.bg-ring {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(6, 1fr);
+  gap: 5px;
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto 1rem;
+}
+
+.bg-ring-center {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  text-align: center;
+  padding: 0.5rem;
+}
+
+.bg-ring-brand {
+  font-weight: 800;
+  font-size: clamp(0.95rem, 3vw, 1.5rem);
+  line-height: 1.05;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+  opacity: 0.5;
+  transform: rotate(-8deg);
+}
+
+.bg-ring-sub {
+  font-size: clamp(0.5rem, 1.4vw, 0.72rem);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted);
+  opacity: 0.45;
+  transform: rotate(-8deg);
+}
+
+.bg-ring-die {
+  font-size: clamp(1.8rem, 6vw, 3rem);
+  color: var(--cyan);
+  line-height: 1;
+}
+
+.bg-rtile {
+  position: relative;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.35rem 0.2rem 0.2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.12rem;
+  text-align: center;
+  overflow: hidden;
+  min-width: 0;
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition);
+}
+
+.bg-rtile.corner {
+  background: var(--panel2);
+  border-color: var(--muted);
+}
+
+.bg-rtile.active {
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 1px var(--cyan), 0 4px 14px rgba(6, 182, 212, 0.3);
+  z-index: 2;
+}
+
+.bg-rtile-band {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 7px;
+}
+
+.bg-rtile-icon {
+  font-size: clamp(0.9rem, 2.4vw, 1.3rem);
+}
+
+.bg-rtile-label {
+  font-size: clamp(0.48rem, 1.35vw, 0.66rem);
+  line-height: 1.12;
+  color: var(--muted);
+}
+
+.bg-rtile.corner .bg-rtile-label {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.bg-rtokens {
+  display: flex;
+  gap: 2px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.bg-token.xs {
+  width: 15px;
+  height: 15px;
+  font-size: 0.6rem;
+}
+
+@media (max-width: 900px) {
+  .bg-play {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- MODE MENU ---------- */
+.bg-mode-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0.9rem;
+}
+
+.bg-mode-card {
+  text-align: left;
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 1.4rem;
+}
+
+.bg-mode-card:hover {
+  border-color: var(--cyan);
+  transform: translateY(-2px);
+}
+
+.bg-mode-icon {
+  font-size: 2rem;
+}
+
+.bg-mode-card h3 {
+  font-size: 1.15rem;
+}
+
+.bg-mode-card p {
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+/* ---------- ONLINE ENTRY ---------- */
+.bg-online-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  max-width: 520px;
+}
+
+.bg-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.bg-field > span {
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+.bg-name-input.wide {
+  width: 100%;
+}
+
+.bg-name-input.code {
+  width: 140px;
+  font-family: var(--mono);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.bg-entry-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.bg-join-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.bg-error {
+  color: var(--red);
+  font-size: 0.88rem;
+}
+
+.bg-loading {
+  color: var(--muted);
+  padding: 2rem 0;
+  text-align: center;
+}
+
+/* ---------- LOBBY ---------- */
+.bg-code-display {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.bg-code-label {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.bg-code {
+  font-family: var(--mono);
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 0.35em;
+  color: var(--cyan);
+}
+
+.bg-roster {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+.bg-roster-row {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+
+.bg-roster-name {
+  font-weight: 600;
+}
+
+.bg-roster-arch {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.bg-host-badge {
+  font-size: 0.72rem;
+  color: var(--yellow);
+  border: 1px solid rgba(234, 179, 8, 0.4);
+  border-radius: 6px;
+  padding: 0.1rem 0.4rem;
+  margin-left: auto;
+}
+
+.bg-my-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--border);
+  padding-top: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.bg-lobby-start {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  align-items: flex-start;
+}
+
+.bg-wait {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+/* ---------- SETUP GUIDE (chưa cấu hình) ---------- */
+.bg-setup-guide ol {
+  padding-left: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+.bg-setup-guide li {
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.bg-setup-guide code {
+  font-family: var(--mono);
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 0.05rem 0.35rem;
+  font-size: 0.82rem;
+  color: var(--cyan);
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 560px) {
+  .bg-archetype-legend {
+    grid-template-columns: 1fr;
+  }
+  .bg-pstats {
+    grid-template-columns: 1fr;
+  }
+  .bg-fifa-pill {
+    order: 3;
+  }
+}

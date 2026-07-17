@@ -15,6 +15,7 @@ import {
 
 interface Props {
   onExplore: () => void;
+  onPlayGame: () => void;
 }
 
 function SplitTitle({ line1, line2 }: { line1: string; line2: string }) {
@@ -46,7 +47,7 @@ function ChapterHead({
   );
 }
 
-export function StoryLanding({ onExplore }: Props) {
+export function StoryLanding({ onExplore, onPlayGame }: Props) {
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -72,9 +73,14 @@ export function StoryLanding({ onExplore }: Props) {
           <span>{SCROLL_META.brandYear}</span>
         </p>
         <p className="scroll-topbar-course">{SCROLL_META.course}</p>
-        <button type="button" className="scroll-topbar-cta" onClick={onExplore}>
-          Vào mô phỏng
-        </button>
+        <div className="scroll-topbar-actions">
+          <button type="button" className="scroll-topbar-ghost" onClick={onPlayGame}>
+            Chơi cờ tỷ phú
+          </button>
+          <button type="button" className="scroll-topbar-cta" onClick={onExplore}>
+            Vào mô phỏng
+          </button>
+        </div>
       </header>
 
       {/* HERO */}
@@ -360,6 +366,9 @@ export function StoryLanding({ onExplore }: Props) {
           <div className="scroll-actions">
             <button type="button" className="btn-primary" onClick={onExplore}>
               {SCROLL_CLOSE.ctaPrimary}
+            </button>
+            <button type="button" className="btn-ghost" onClick={onPlayGame}>
+              Chơi cờ tỷ phú 4 người
             </button>
           </div>
         </div>
