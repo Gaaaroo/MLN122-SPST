@@ -308,7 +308,7 @@ export default function OnlineGame({ onBack }: Props) {
   const canAct = myPlayerId === game.current;
 
   return (
-    <div className="bg-page">
+    <div className="bg-page bg-page-play">
       <header className="bg-topbar">
         <button type="button" className="btn-ghost" onClick={leave}>
           ← Thoát

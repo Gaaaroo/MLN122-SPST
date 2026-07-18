@@ -203,7 +203,7 @@ function HotseatGame({ onBack }: { onBack: () => void }) {
   // PLAYING
   const current = game.players[game.current]!;
   return (
-    <div className="bg-page">
+    <div className="bg-page bg-page-play">
       <header className="bg-topbar">
         <button type="button" className="btn-ghost" onClick={onBack}>
           ← Thoát

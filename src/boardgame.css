@@ -249,7 +249,7 @@
 
 .bg-player.active {
   opacity: 1;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  box-shadow: var(--shadow-md);
 }
 
 .bg-player h4 {
@@ -281,37 +281,101 @@
 }
 
 /* ---------- ACTION ---------- */
-.bg-action {
-  min-height: 140px;
-}
-
-.bg-action-lead {
-  font-size: 1.02rem;
-  margin-bottom: 0.5rem;
-}
-
 .bg-tile-blurb {
   color: var(--muted);
   font-size: 0.86rem;
   margin-bottom: 0.9rem;
 }
 
-.bg-roll {
+/* ---------- ZOOM XÚC XẮC ---------- */
+.bg-diceroll {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.9rem;
-  padding: 0.5rem 0;
+  justify-content: center;
+  gap: 1rem;
+  background: rgba(2, 6, 23, 0.58);
+  backdrop-filter: blur(2px);
+  pointer-events: none;
+  animation: bg-diceroll-in 0.18s ease;
 }
 
-.bg-dice-btn {
-  font-size: 1.1rem;
+.bg-diceroll.leaving {
+  animation: bg-diceroll-out 0.3s ease forwards;
 }
 
-.bg-die {
-  font-size: 1.5rem;
+.bg-diceroll-die {
+  font-size: clamp(8rem, 36vw, 16rem);
+  line-height: 1;
   color: var(--cyan);
-  vertical-align: -2px;
+  filter: drop-shadow(0 14px 34px rgba(0, 0, 0, 0.55));
+}
+
+.bg-diceroll-die.spin {
+  animation: bg-dice-spin 0.16s linear infinite;
+}
+
+.bg-diceroll-die.land,
+.bg-diceroll-die.leave {
+  animation: bg-dice-pop 0.5s cubic-bezier(0.2, 1.5, 0.4, 1);
+}
+
+.bg-diceroll-caption {
+  font-size: clamp(1.1rem, 3.6vw, 1.7rem);
+  color: var(--text);
+  text-align: center;
+}
+
+@keyframes bg-diceroll-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes bg-diceroll-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes bg-dice-spin {
+  from {
+    transform: rotate(-13deg) scale(0.9);
+  }
+  to {
+    transform: rotate(13deg) scale(1);
+  }
+}
+
+@keyframes bg-dice-pop {
+  0% {
+    transform: scale(0.3) rotate(-24deg);
+    opacity: 0.4;
+  }
+  60% {
+    transform: scale(1.16) rotate(6deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bg-diceroll-die.spin,
+  .bg-diceroll-die.land,
+  .bg-diceroll-die.leave {
+    animation: none;
+  }
 }
 
 .bg-options {
@@ -358,52 +422,209 @@
   line-height: 1.4;
 }
 
-.bg-result {
+/* ---------- POPUP LỰA CHỌN (kiểu bảng lệnh) ---------- */
+.bg-choose-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgba(2, 6, 23, 0.55);
+  backdrop-filter: blur(2px);
+  animation: bg-diceroll-in 0.2s ease;
+}
+
+.bg-choose-modal-card {
+  width: min(600px, 96vw);
+  max-height: 92vh;
+  overflow: hidden auto;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+  animation: bg-choose-pop 0.32s cubic-bezier(0.2, 1.3, 0.4, 1);
+}
+
+@keyframes bg-choose-pop {
+  from {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.bg-choose-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  color: #fff;
+}
+
+.bg-choose-head-title {
+  font-size: clamp(1.3rem, 4.5vw, 1.7rem);
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+.bg-choose-head-die {
+  font-size: 2.1rem;
+  line-height: 1;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+}
+
+.bg-choose-head-side {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-shrink: 0;
+}
+
+/* Đồng hồ 10s ở pha chọn */
+.bg-choose-timer {
+  font-family: var(--mono);
+  font-size: 0.92rem;
+  font-weight: 600;
+  background: rgba(0, 0, 0, 0.28);
+  border-radius: 999px;
+  padding: 0.3em 0.75em;
+  min-width: 4em;
+  text-align: center;
+}
+
+.bg-choose-timer.danger {
+  background: var(--red);
+  animation: bg-roll-pulse 0.9s ease-in-out infinite;
+}
+
+.bg-choose-timeout-hint {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.bg-ok-btn {
+  margin-top: 0.2rem;
+  padding: 0.5em 2.4em;
+  border-radius: 999px;
+  font-size: 1rem;
+}
+
+.bg-choose-body {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 0.8rem;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1.4rem 1.6rem 1.7rem;
+  text-align: center;
 }
 
-.bg-result-log {
-  color: var(--text);
-  font-size: 0.95rem;
-}
-
-.bg-card {
+.bg-choose-icon {
+  font-size: 3.4rem;
+  line-height: 1;
+  width: 5.4rem;
+  height: 5.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: var(--panel2);
   border: 1px solid var(--border);
-  border-left: 3px solid var(--yellow);
-  border-radius: 10px;
-  padding: 0.9rem 1rem;
-  width: 100%;
+  border-radius: 20px;
 }
 
-.bg-card-tag {
-  display: inline-block;
-  font-size: 0.72rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--yellow);
+.bg-choose-lead {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.bg-choose-body .bg-tile-blurb {
+  font-size: 0.95rem;
   margin-bottom: 0.3rem;
 }
 
-.bg-card h4 {
-  font-size: 1.05rem;
-  margin-bottom: 0.35rem;
+.bg-choose-body .bg-options {
+  width: 100%;
+  gap: 0.7rem;
+  grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
 }
 
-.bg-card p {
-  font-size: 0.88rem;
+.bg-choose-body .bg-option {
+  padding: 1rem;
+  align-items: center;
+  text-align: center;
+  gap: 0.35rem;
+}
+
+.bg-choose-body .bg-option-label {
+  font-size: 1.08rem;
+}
+
+.bg-choose-body .bg-option-cost {
+  font-size: 0.95rem;
+}
+
+.bg-choose-body .bg-option-effect {
+  font-size: 0.86rem;
+}
+
+.bg-choose-body .bg-option-hint {
+  font-size: 0.82rem;
+}
+
+.bg-choose-balance {
+  margin-top: 0.3rem;
+  font-size: 1rem;
   color: var(--muted);
-  line-height: 1.5;
 }
 
-.bg-card-effect {
-  color: var(--text) !important;
-  font-family: var(--mono);
-  font-size: 0.82rem !important;
-  margin-top: 0.5rem;
+.bg-choose-balance strong {
+  color: var(--text);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bg-choose-modal-card {
+    animation: none;
+  }
+}
+
+/* Chip nhãn thẻ sự kiện + dòng kết quả trong popup */
+.bg-choose-tag {
+  display: inline-block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--yellow);
+  border: 1px solid var(--yellow);
+  border-radius: 999px;
+  padding: 0.2em 0.85em;
+}
+
+.bg-result-big {
+  font-size: 1.08rem;
+  line-height: 1.55;
+  color: var(--text);
+}
+
+.bg-choose-auto {
+  font-size: 0.8rem;
+  color: var(--muted);
+  animation: bg-auto-blink 1.4s ease-in-out infinite;
+}
+
+@keyframes bg-auto-blink {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 /* ---------- END SCREEN ---------- */
@@ -509,6 +730,17 @@
   align-items: start;
 }
 
+/* Trang lúc chơi: topbar ở trên, bàn cờ căn giữa phần màn hình còn lại. */
+.bg-page-play {
+  display: flex;
+  flex-direction: column;
+}
+
+.bg-page-play .bg-play {
+  flex: 1;
+  align-content: center;
+}
+
 .bg-play-board {
   min-width: 0;
 }
@@ -578,6 +810,44 @@
   font-size: clamp(1.8rem, 6vw, 3rem);
   color: var(--cyan);
   line-height: 1;
+}
+
+/* Nút Gieo ngay giữa bàn cờ khi tới lượt */
+.bg-ring-turn {
+  font-weight: 800;
+  font-size: clamp(0.78rem, 1.8vw, 0.92rem);
+  margin-top: 0.35rem;
+}
+
+.bg-ring-roll {
+  font-size: clamp(0.85rem, 2vw, 1rem);
+  padding: 0.5em 1.35em;
+  border-radius: 999px;
+  animation: bg-roll-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes bg-roll-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.07);
+  }
+}
+
+.bg-ring-wait {
+  margin-top: 0.4rem;
+  font-size: clamp(0.72rem, 1.9vw, 0.88rem);
+  color: var(--muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bg-ring-roll,
+  .bg-choose-auto,
+  .bg-choose-timer.danger {
+    animation: none;
+  }
 }
 
 .bg-rtile {

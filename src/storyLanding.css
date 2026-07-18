@@ -1,11 +1,12 @@
 /* ─── Scroll-book landing (inspired by mln-su2026) ─── */
 
 .scroll-book {
-  --sb-bg: #050505;
-  --sb-ink: #f4f0e8;
-  --sb-muted: rgba(244, 240, 232, 0.62);
-  --sb-line: rgba(244, 240, 232, 0.12);
-  --sb-accent: #e8c547;
+  --sb-bg: #f7f5ef;
+  --sb-panel: #fffefb;
+  --sb-ink: #1c1a15;
+  --sb-muted: rgba(28, 26, 21, 0.6);
+  --sb-line: rgba(28, 26, 21, 0.14);
+  --sb-accent: #a9781a;
   --sb-display: "Be Vietnam Pro", "DM Sans", system-ui, sans-serif;
   --sb-body: "Be Vietnam Pro", "DM Sans", system-ui, sans-serif;
   background: var(--sb-bg);
@@ -26,7 +27,7 @@
   gap: 1rem;
   padding: 0.85rem 1.25rem;
   pointer-events: none;
-  background: linear-gradient(180deg, rgba(5, 5, 5, 0.85), transparent);
+  background: linear-gradient(180deg, rgba(247, 245, 239, 0.92), transparent);
 }
 
 .scroll-topbar-brand,
@@ -59,7 +60,7 @@
 
 .scroll-topbar-cta {
   background: transparent;
-  border: 1px solid rgba(244, 240, 232, 0.35);
+  border: 1px solid rgba(28, 26, 21, 0.3);
   color: var(--sb-ink);
   font-size: 0.78rem;
   letter-spacing: 0.06em;
@@ -69,7 +70,8 @@
 }
 
 .scroll-topbar-cta:hover {
-  background: rgba(244, 240, 232, 0.08);
+  background: rgba(28, 26, 21, 0.06);
+  border-color: var(--sb-accent);
 }
 
 .scroll-topbar-actions {
@@ -93,7 +95,7 @@
 
 .scroll-topbar-ghost:hover {
   opacity: 1;
-  border-color: rgba(244, 240, 232, 0.25);
+  border-color: rgba(28, 26, 21, 0.22);
 }
 
 /* Reveal */
@@ -125,7 +127,7 @@
   position: absolute;
   inset: 0;
   overflow: hidden;
-  background: #050505;
+  background: var(--sb-bg);
 }
 
 .scroll-hero-video {
@@ -135,23 +137,23 @@
   height: 100%;
   object-fit: cover;
   object-position: center;
-  filter: grayscale(0.2) contrast(1.05) brightness(0.85);
+  filter: grayscale(0.05) contrast(1.04) brightness(0.99) saturate(1.1);
 }
 
 .scroll-hero-veil {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, rgba(5, 5, 5, 0.45) 0%, rgba(5, 5, 5, 0.4) 40%, #050505 96%),
-    linear-gradient(90deg, rgba(5, 5, 5, 0.55), transparent 45%, rgba(5, 5, 5, 0.55));
+    radial-gradient(ellipse 66% 52% at 50% 87%, rgba(247, 245, 239, 0.82), rgba(247, 245, 239, 0.3) 46%, transparent 72%),
+    linear-gradient(180deg, transparent 0%, transparent 46%, rgba(247, 245, 239, 0.42) 76%, var(--sb-bg) 99%);
 }
 
 .scroll-hero-grain {
   position: absolute;
   inset: 0;
-  opacity: 0.22;
+  opacity: 0.14;
   pointer-events: none;
-  mix-blend-mode: overlay;
+  mix-blend-mode: multiply;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
@@ -227,7 +229,7 @@
 .scroll-quote p {
   font-size: clamp(1rem, 2.4vw, 1.2rem);
   line-height: 1.55;
-  color: rgba(244, 240, 232, 0.9);
+  color: rgba(28, 26, 21, 0.88);
   margin: 0 0 0.75rem;
 }
 
@@ -373,7 +375,7 @@
 }
 
 .scroll-ba-col {
-  background: var(--sb-bg);
+  background: var(--sb-panel);
   padding: 1.25rem 1.15rem;
 }
 
@@ -385,11 +387,11 @@
 }
 
 .scroll-ba-col.before h4 {
-  color: #eab308;
+  color: #b7791f;
 }
 
 .scroll-ba-col.after h4 {
-  color: #f87171;
+  color: #dc2626;
 }
 
 .scroll-ba-col ul {
@@ -403,14 +405,14 @@
 
 .scroll-ba-col li {
   font-size: 0.9rem;
-  color: rgba(244, 240, 232, 0.85);
+  color: rgba(28, 26, 21, 0.82);
   line-height: 1.45;
   padding-left: 0.85rem;
   border-left: 2px solid var(--sb-line);
 }
 
 .scroll-lesson.harm h3 {
-  color: #fca5a5;
+  color: #dc2626;
 }
 
 /* Horror stats */
@@ -437,7 +439,7 @@
 
 .scroll-stat-label {
   font-size: 0.9rem;
-  color: rgba(244, 240, 232, 0.85);
+  color: rgba(28, 26, 21, 0.82);
 }
 
 .scroll-stat-value {
@@ -569,7 +571,8 @@
 .scroll-machine-card {
   border: 1px solid var(--sb-line);
   padding: 1.35rem 1.2rem;
-  background: linear-gradient(160deg, rgba(255, 255, 255, 0.03), transparent);
+  background: var(--sb-panel);
+  box-shadow: 0 1px 2px rgba(28, 26, 21, 0.04), 0 10px 26px rgba(28, 26, 21, 0.05);
 }
 
 .scroll-machine-num {
@@ -611,7 +614,7 @@
 }
 
 .scroll-dual-pane {
-  background: var(--sb-bg);
+  background: var(--sb-panel);
   padding: 1.75rem 1.35rem;
 }
 
@@ -625,11 +628,11 @@
 }
 
 .scroll-dual-pane.fifa .scroll-dual-year {
-  color: #5eead4;
+  color: #0d9488;
 }
 
 .scroll-dual-pane.host .scroll-dual-year {
-  color: #f87171;
+  color: #dc2626;
 }
 
 .scroll-dual-pane h3 {
@@ -652,7 +655,7 @@
 .scroll-dual-pane li {
   font-size: 0.92rem;
   line-height: 1.45;
-  color: rgba(244, 240, 232, 0.85);
+  color: rgba(28, 26, 21, 0.82);
   padding-left: 0.9rem;
   border-left: 2px solid var(--sb-line);
 }
@@ -748,11 +751,11 @@
 }
 
 .scroll-gap-nums .exp {
-  color: #eab308;
+  color: #b7791f;
 }
 
 .scroll-gap-nums .act {
-  color: #f87171;
+  color: #dc2626;
 }
 
 .scroll-gap-nums .arrow {
@@ -817,7 +820,7 @@
 .scroll-close-quote p {
   font-size: clamp(1.05rem, 2.5vw, 1.3rem);
   line-height: 1.65;
-  color: rgba(244, 240, 232, 0.9);
+  color: rgba(28, 26, 21, 0.88);
   margin: 0;
 }
 
@@ -861,22 +864,24 @@
 
 .scroll-book .btn-primary {
   background: var(--sb-accent);
-  color: #111;
+  color: #fdfbf4;
   border: 1px solid var(--sb-accent);
 }
 
 .scroll-book .btn-primary:hover {
-  filter: brightness(1.05);
+  filter: brightness(1.06);
+  box-shadow: 0 8px 22px rgba(169, 120, 26, 0.3);
 }
 
 .scroll-book .btn-secondary {
   background: transparent;
   color: var(--sb-ink);
-  border: 1px solid rgba(244, 240, 232, 0.35);
+  border: 1px solid rgba(28, 26, 21, 0.3);
 }
 
 .scroll-book .btn-secondary:hover {
-  background: rgba(244, 240, 232, 0.06);
+  background: rgba(28, 26, 21, 0.06);
+  border-color: var(--sb-accent);
 }
 
 /* Responsive */
