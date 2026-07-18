@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { Screen } from "./types";
 import OverviewPanel from "./components/OverviewPanel";
 import { StoryLanding } from "./components/StoryLanding";
+import BoardGameScreen from "./components/BoardGameScreen";
 import type { OverviewConfig } from "./overviewTypes";
 
 export default function App() {
@@ -17,6 +18,7 @@ export default function App() {
           setOverviewSeed(undefined);
           setScreen("overview");
         }}
+        onPlayGame={() => setScreen("boardgame")}
       />
     );
   }
@@ -26,8 +28,13 @@ export default function App() {
       <OverviewPanel
         initial={overviewSeed}
         onBack={() => setScreen("landing")}
+        onPlayGame={() => setScreen("boardgame")}
       />
     );
+  }
+
+  if (screen === "boardgame") {
+    return <BoardGameScreen onBack={() => setScreen("landing")} />;
   }
 
   return null;
