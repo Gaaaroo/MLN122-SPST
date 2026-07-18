@@ -12,6 +12,7 @@ import {
   TEAM_EXPANSION_BENEFITS,
 } from '../realWorldData';
 import FactsPanel from './FactsPanel';
+import MlnChatBot from './MlnChatBot';
 import { Slider } from './Slider';
 
 interface Props {
@@ -434,6 +435,8 @@ export default function OverviewPanel({ initial, onBack, onPlayGame }: Props) {
           </section>
         </main>
       </div>
+
+      <MlnChatBot outcome={outcome} />
     </div>
   );
 }

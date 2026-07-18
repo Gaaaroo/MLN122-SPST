@@ -12,6 +12,7 @@ import {
   SCROLL_REVENUE,
   SCROLL_RISKS,
 } from '../landingContent';
+import MlnChatBot from './MlnChatBot';
 
 interface Props {
   onExplore: () => void;
@@ -508,6 +509,8 @@ export function StoryLanding({ onExplore, onPlayGame }: Props) {
           </div>
         </div>
       </section>
+
+      <MlnChatBot />
     </div>
   );
 }
