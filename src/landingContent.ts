@@ -5,6 +5,9 @@
  */
 
 export const SCROLL_META = {
+  brand: 'Hostia',
+  brandYear: '2034',
+  course: 'MLN122 · Kinh tế chính trị World Cup',
   scrollHint: 'Cuộn xuống để đọc cán cân',
 } as const;
 
@@ -70,6 +73,7 @@ export const SCROLL_COSTS = {
       },
     ],
   },
+  foot: 'Nguồn tổng hợp: docs dự án · Statista (chi phí đăng cai 1994–2022). Qatar $220B là ước tính hạ tầng quốc gia gắn WC, không chỉ sân bóng.',
 } as const;
 
 /** 2 — Doanh thu */

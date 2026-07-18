@@ -7,7 +7,6 @@ import {
   type OverviewConfig,
 } from '../overviewTypes';
 import {
-  DATA_SOURCES,
   formatUsdB,
   MLN_CONNECTIONS,
   TEAM_EXPANSION_BENEFITS,
