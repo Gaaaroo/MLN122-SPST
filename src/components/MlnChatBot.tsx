@@ -182,6 +182,45 @@ export default function MlnChatBot({ outcome }: Props) {
     setTurnProgress({ spoken: s.turnsSpoken, max: s.maxTurns });
   }
 
+  function buildSpeakPrompt(
+    persona: DebatePersona,
+    transcript: DebateLine[],
+    topic: string,
+  ): string {
+    if (transcript.length === 0) {
+      return `Mở đầu tranh luận về chủ đề: "${topic}".
+Với tư cách ${persona.name}, nêu lập trường mở đầu 2–4 câu, tiếng Việt, nói với khán giả/người tham gia trong phòng.`;
+    }
+
+    const last = transcript[transcript.length - 1];
+    const history = transcript
+      .map((t) => `${t.speaker === "user" ? "Bạn" : t.name}: ${t.text}`)
+      .join("\n");
+
+    if (last.speaker === "user") {
+      return `Chủ đề phòng tranh luận: "${topic}"
+
+Diễn biến đến giờ:
+${history}
+
+Câu vừa rồi của người tham gia thật (Bạn): "${last.text}"
+
+Nhiệm vụ của bạn (${persona.name}):
+1) Trả lời TRỰC TIẾP câu đó trước — như đang nói chuyện với họ.
+2) Nếu là chào hỏi / câu ngắn / chưa rõ ý: đáp xã giao ngắn trong vai, hỏi họ muốn bàn điểm nào trong chủ đề; KHÔNG tự đọc bài luận dài về World Cup.
+3) Nếu họ nêu ý kiến/lập luận: phản hồi đúng ý họ (đồng ý/phản biện/hỏi lại), rồi mới nối sang quan điểm của vai bạn nếu cần.
+4) 2–5 câu, tiếng Việt tự nhiên. Không bỏ qua nội dung họ vừa nói.`;
+    }
+
+    return `Chủ đề: "${topic}"
+
+Diễn biến đến giờ:
+${history}
+
+Lượt vừa rồi là của ${last.name ?? "một diễn giả"}.
+Với tư cách ${persona.name}, phản biện hoặc bổ sung TRỰC TIẾP ý vừa nói (trích/ám chỉ nội dung cụ thể), 2–5 câu tiếng Việt. Không lặp lại diễn văn chung chung.`;
+  }
+
   async function speakNext(): Promise<boolean> {
     const s = debateCtl.current;
     if (s.busy || s.personas.length === 0) return false;
@@ -191,14 +230,8 @@ export default function MlnChatBot({ outcome }: Props) {
     setDebateBusy(true);
 
     const persona = s.personas[s.turnIndex % s.personas.length];
-    const transcriptText = s.transcript
-      .map((t) => `${t.speaker === "user" ? "Bạn" : t.name}: ${t.text}`)
-      .join("\n");
-
-    const system = `${persona.system}\n\nBối cảnh số liệu:\n${labContext}\n\nChủ đề: "${s.topic}"`;
-    const userMsg = transcriptText
-      ? `Diễn biến đến giờ:\n${transcriptText}\n\nPhát biểu lượt của bạn (${persona.name}), 3–5 câu, tiếng Việt, phản biện hoặc bổ sung ý gần nhất.`
-      : `Mở đầu tranh luận với tư cách ${persona.name}, nêu lập trường trong 3–5 câu, tiếng Việt.`;
+    const system = `${persona.system}\n\nBối cảnh số liệu (chỉ dùng khi thật sự cần cho lập luận):\n${labContext}\n\nChủ đề: "${s.topic}"`;
+    const userMsg = buildSpeakPrompt(persona, s.transcript, s.topic);
 
     try {
       const text = await callGemini({

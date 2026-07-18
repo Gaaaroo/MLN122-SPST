@@ -2365,6 +2365,26 @@ input[type="range"] {
   cursor: not-allowed;
 }
 
+/* Đè accent nâu của scroll-book — nút AI Lab luôn xanh đồng bộ tab */
+.mln-lab .btn-primary,
+.scroll-book .mln-lab .btn-primary {
+  background: linear-gradient(135deg, var(--cyan), var(--blue));
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 0.85rem;
+  font-weight: 600;
+  box-shadow: none;
+}
+
+.mln-lab .btn-primary:hover,
+.scroll-book .mln-lab .btn-primary:hover {
+  filter: brightness(1.06);
+  box-shadow: var(--shadow-cyan);
+}
+
 @media (max-width: 720px) {
   .mln-debate {
     grid-template-columns: 1fr;
