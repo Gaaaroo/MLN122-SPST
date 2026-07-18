@@ -7,6 +7,7 @@ import {
 } from "../aiLabData";
 import { callGemini, getApiKey, saveApiKey, type ChatMessage } from "../geminiApi";
 import type { OverviewOutcome } from "../overviewTypes";
+import { AiRichText } from "./AiRichText";
 
 interface Props {
   outcome?: OverviewOutcome;
@@ -29,7 +30,7 @@ const CHAT_STARTERS = [
 
 const ANALYZE_SYSTEM = `Bạn là chuyên gia Kinh tế chính trị Mác–Lênin, phân tích số liệu thể thao. Trả lời bằng tiếng Việt, súc tích, dùng gạch đầu dòng (mỗi ý bắt đầu bằng "•"), tối đa khoảng 160 từ. Tập trung: giá trị thặng dư, tích lũy tư bản, độc quyền, mâu thuẫn nhà nước – tư bản tư nhân. Không bịa số ngoài ngữ cảnh được cung cấp.`;
 
-const CHAT_SYSTEM_BASE = `Bạn là trợ lý phân tích kinh tế thể thao, chuyên World Cup và liên hệ Kinh tế chính trị Mác–Lênin. Trả lời tiếng Việt, ngắn gọn, có số liệu khi phù hợp (chỉ dùng số trong ngữ cảnh), có thể dùng gạch đầu dòng cho câu hỏi phức tạp.`;
+const CHAT_SYSTEM_BASE = `Bạn là trợ lý phân tích kinh tế thể thao, chuyên World Cup và liên hệ Kinh tế chính trị Mác–Lênin. Trả lời tiếng Việt, ngắn gọn, có số liệu khi phù hợp (chỉ dùng số trong ngữ cảnh). Có thể dùng **đậm** cho thuật ngữ quan trọng và gạch đầu dòng (- ) cho ý phức tạp. Không dùng heading markdown (#).`;
 
 /** Mỗi đợt tự động: mỗi vai nói 1 lần. Tổng tối đa cứng. */
 const DEBATE_HARD_CAP = 8;
@@ -449,7 +450,9 @@ export default function MlnChatBot({ outcome }: Props) {
                 </div>
               ) : null}
               {analyzeText ? (
-                <div className="mln-lab-output">{analyzeText}</div>
+                <div className="mln-lab-output">
+                  <AiRichText text={analyzeText} />
+                </div>
               ) : null}
               <p className="mln-lab-note">
                 Số liệu bám docs Hostia + kịch bản slider đang mở (nếu có). Nội
@@ -542,13 +545,10 @@ export default function MlnChatBot({ outcome }: Props) {
                 {turnProgress.max > 0 ? (
                   <p className="mln-debate-progress">
                     Lượt AI: {turnProgress.spoken}/{turnProgress.max}
+                    {debateRunning ? " · Đang chạy…" : ""}
                     {turnProgress.spoken >= DEBATE_HARD_CAP
                       ? " · Đã hết lượt tự động"
-                      : debateRunning
-                        ? " · Đang chạy…"
-                        : showContinue
-                          ? " · Đã dừng — có thể tiếp tục 1 vòng"
-                          : ""}
+                      : ""}
                   </p>
                 ) : null}
                 <div className="mln-debate-transcript" ref={debateRef}>
@@ -562,7 +562,7 @@ export default function MlnChatBot({ outcome }: Props) {
                       t.speaker === "user" ? (
                         <div key={i} className="mln-bubble mln-bubble-user">
                           <div className="mln-bubble-who">Bạn</div>
-                          {t.text}
+                          <div className="mln-bubble-body">{t.text}</div>
                         </div>
                       ) : (
                         <div
@@ -576,7 +576,9 @@ export default function MlnChatBot({ outcome }: Props) {
                           >
                             {t.name}
                           </div>
-                          {t.text}
+                          <div className="mln-bubble-body">
+                            <AiRichText text={t.text} />
+                          </div>
                         </div>
                       ),
                     )
@@ -588,22 +590,24 @@ export default function MlnChatBot({ outcome }: Props) {
                   ) : null}
                 </div>
 
-                {showContinue &&
-                !debateRunning &&
-                turnProgress.spoken < DEBATE_HARD_CAP ? (
-                  <button
-                    type="button"
-                    className="btn-primary mln-continue"
-                    onClick={continueDebate}
-                    disabled={!hasKey || debateBusy}
-                  >
-                    Tiếp tục 1 vòng nữa →
-                  </button>
-                ) : null}
-
-                <p className="mln-lab-hint">
-                  Gõ để tự tham gia, hoặc bấm “Bắt đầu” để AI đối đáp nhau.
-                </p>
+                <div className="mln-debate-footer">
+                  {showContinue &&
+                  !debateRunning &&
+                  turnProgress.spoken < DEBATE_HARD_CAP ? (
+                    <button
+                      type="button"
+                      className="btn-ghost mln-continue"
+                      onClick={continueDebate}
+                      disabled={!hasKey || debateBusy}
+                    >
+                      Tiếp tục 1 vòng nữa →
+                    </button>
+                  ) : (
+                    <p className="mln-lab-hint">
+                      Gõ để tự tham gia, hoặc bấm “Bắt đầu” để AI đối đáp nhau.
+                    </p>
+                  )}
+                </div>
                 <form
                   className="mln-chat-form"
                   onSubmit={(e) => {
@@ -640,7 +644,8 @@ export default function MlnChatBot({ outcome }: Props) {
               <div className="mln-chat-messages" ref={chatRef}>
                 {chatMessages.length === 0 ? (
                   <div className="mln-chat-empty">
-                    <p>Chưa có tin nhắn. Thử một câu gợi ý:</p>
+                    <p className="mln-chat-empty-title">Bắt đầu bằng một câu hỏi</p>
+                    <p>Thử gợi ý dưới đây — AI trả lời theo góc nhìn KTCT.</p>
                     <div className="mln-chat-starters">
                       {CHAT_STARTERS.map((s) => (
                         <button
@@ -659,20 +664,43 @@ export default function MlnChatBot({ outcome }: Props) {
                   chatMessages.map((m, i) => (
                     <div
                       key={`${m.role}-${i}`}
-                      className={`mln-chat-bubble mln-chat-${m.role}`}
+                      className={`mln-chat-row mln-chat-row-${m.role}`}
                     >
-                      {m.content}
+                      <div
+                        className={`mln-chat-avatar mln-chat-avatar-${m.role}`}
+                        aria-hidden
+                      >
+                        {m.role === "user" ? "Bạn" : "AI"}
+                      </div>
+                      <div
+                        className={`mln-chat-bubble mln-chat-${m.role}`}
+                      >
+                        {m.role === "assistant" ? (
+                          <AiRichText text={m.content} />
+                        ) : (
+                          m.content
+                        )}
+                      </div>
                     </div>
                   ))
                 )}
                 {chatBusy ? (
-                  <div className="mln-chat-bubble mln-chat-assistant mln-chat-typing">
-                    Đang suy nghĩ…
+                  <div className="mln-chat-row mln-chat-row-assistant">
+                    <div className="mln-chat-avatar mln-chat-avatar-assistant" aria-hidden>
+                      AI
+                    </div>
+                    <div className="mln-chat-bubble mln-chat-assistant mln-chat-typing">
+                      <span className="mln-typing-dots" aria-label="Đang suy nghĩ">
+                        <i />
+                        <i />
+                        <i />
+                      </span>
+                    </div>
                   </div>
                 ) : null}
               </div>
               <form
-                className="mln-chat-form"
+                className="mln-chat-form mln-chat-composer"
                 onSubmit={(e) => {
                   e.preventDefault();
                   void sendChat(chatInput);
