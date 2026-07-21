@@ -109,7 +109,7 @@ export const OVERVIEW_PRESETS: OverviewPreset[] = [
     label: "Kiểu Qatar 2022",
     config: {
       infrastructure: 95,
-      publicPrivate: 80,
+      publicPrivate: 30,
       socialSpend: 20,
       tourismFocus: 85,
       laborProtection: 15,
@@ -119,7 +119,7 @@ export const OVERVIEW_PRESETS: OverviewPreset[] = [
   },
   {
     id: "fifa-max",
-    label: "Thị trường châu Á max",
+    label: "Mở rộng thị trường châu Á",
     config: {
       infrastructure: 75,
       publicPrivate: 60,
@@ -164,8 +164,9 @@ export const REAL_WORLD_CASES: RealWorldCase[] = [
     name: "Đức 2006",
     year: "2006",
     match: 0,
+    hostCostUsd: 4.3,
     blurb:
-      "Dùng lại sân có sẵn, làm chiến dịch 'Thế giới làm khách' để đổi hình ảnh cứng nhắc thành thân thiện. Tài liệu không ghi một con số tổng chi phí.",
+      "Chi khoảng 4,3 tỷ (Statista), phần lớn dùng lại sân có sẵn. Chiến dịch 'Thế giới làm khách' đổi hình ảnh cứng nhắc thành thân thiện; du lịch lời khoảng 0,9 tỷ — một trong số ít kỳ gần đạt kỳ vọng.",
   },
   {
     id: "south-africa-2010",
@@ -174,7 +175,7 @@ export const REAL_WORLD_CASES: RealWorldCase[] = [
     match: 0,
     hostCostUsd: 3.6,
     blurb:
-      "Chi khoảng 3,6 tỷ. Kỳ vọng lời 6–12 tỷ nhưng thực tế chỉ khoảng 0,3 tỷ. Durban tắc đường, Cape Town ế khách cả chục năm.",
+      "Chi khoảng 3,6 tỷ. Kỳ vọng lời 6–12 tỷ nhưng khách chỉ chi khoảng 0,5 tỷ (309.000 khách so với dự báo 483.000). Durban tắc đường, sân Cape Town ế khách cả chục năm.",
   },
   {
     id: "brazil-2014",
@@ -209,6 +210,6 @@ export const REAL_WORLD_CASES: RealWorldCase[] = [
     year: "2026",
     match: 0,
     blurb:
-      "16 sân có sẵn (11+3+2), 48 đội, Mỹ tổ chức khoảng 78 trận. FIFA dự thu khoảng 11 tỷ. Có dự báo GDP Mỹ tăng 17,2 tỷ, cả ba nước khoảng 40,9 tỷ — nhưng đây chỉ là dự đoán, không phải hóa đơn xây sân.",
+      "16 sân có sẵn (Mỹ 11, Mexico 3, Canada 2), 48 đội, Mỹ tổ chức khoảng 78 trận. FIFA dự thu 11 tỷ, sau giải công bố vượt 15 tỷ. Nghiên cứu do FIFA đặt làm dự báo GDP Mỹ tăng 17,2 tỷ, toàn cầu 40,9 tỷ — giới phân tích độc lập cho là con số bị thổi phồng.",
   },
 ];

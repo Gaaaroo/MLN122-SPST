@@ -23,9 +23,9 @@ interface DebateLine {
 }
 
 const CHAT_STARTERS = [
-  "So sánh mô hình lợi nhuận FIFA với tư bản độc quyền?",
-  "Qatar $220B: hạ tầng hay chi phí xã hội hoá?",
-  "Ai tạo giá trị trong World Cup — ai chiếm thặng dư?",
+  "Vì sao nói FIFA giống một tổ chức độc quyền?",
+  "Qatar chi 220 tỷ đô, vậy dân Qatar được gì?",
+  "Ai làm ra tiền trong World Cup, và ai giữ phần lớn?",
 ];
 
 const ANALYZE_SYSTEM = `Bạn là chuyên gia Kinh tế chính trị Mác–Lênin, phân tích số liệu thể thao. Trả lời bằng tiếng Việt, súc tích, dùng gạch đầu dòng (mỗi ý bắt đầu bằng "•"), tối đa khoảng 160 từ. Tập trung: giá trị thặng dư, tích lũy tư bản, độc quyền, mâu thuẫn nhà nước – tư bản tư nhân. Không bịa số ngoài ngữ cảnh được cung cấp.`;
@@ -396,367 +396,427 @@ Với tư cách ${persona.name}, phản biện hoặc bổ sung TRỰC TIẾP ý
             aria-label="Phòng thí nghiệm AI kinh tế World Cup"
             onClick={(e) => e.stopPropagation()}
           >
-          <header className="mln-chat-head">
-            <div>
-              <h3>World Cup Econ Lab</h3>
-              <p>Phân tích · Tranh luận · Hỏi đáp — góc nhìn KTCT</p>
-            </div>
-            <button
-              type="button"
-              className="btn-ghost mln-chat-close"
-              onClick={() => setOpen(false)}
-              aria-label="Đóng"
-            >
-              ✕
-            </button>
-          </header>
-
-          <div className="mln-lab-tabs" role="tablist">
-            {(
-              [
-                ["analyze", "Phân tích"],
-                ["debate", "Tranh luận"],
-                ["chat", "Hỏi đáp"],
-              ] as const
-            ).map(([id, label]) => (
-              <button
-                key={id}
-                type="button"
-                role="tab"
-                aria-selected={tab === id}
-                className={`mln-lab-tab${tab === id ? " is-active" : ""}`}
-                onClick={() => {
-                  setTab(id);
-                  setError(null);
-                }}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-
-          {!hasKey ? (
-            <div className="mln-chat-key">
-              <p>
-                Cần Gemini API key. Thêm <code>VITE_GEMINI_API_KEY</code> vào{" "}
-                <code>.env.local</code> rồi restart, hoặc dán key tạm:
-              </p>
-              <div className="mln-chat-key-row">
-                <input
-                  type="password"
-                  value={apiKeyDraft}
-                  onChange={(e) => setApiKeyDraft(e.target.value)}
-                  placeholder="AIza..."
-                  autoComplete="off"
-                />
-                <button
-                  type="button"
-                  className="btn-primary"
-                  onClick={handleSaveKey}
-                  disabled={!apiKeyDraft.trim()}
-                >
-                  Lưu
-                </button>
-              </div>
-            </div>
-          ) : null}
-
-          {error ? <p className="mln-chat-error mln-lab-error">{error}</p> : null}
-
-          {tab === "analyze" ? (
-            <div className="mln-lab-body">
-              <p className="mln-lab-lead">
-                AI diễn giải số liệu dashboard / docs qua lăng kính giá trị
-                thặng dư, tích lũy tư bản và độc quyền — lấy chất liệu viết bài.
-              </p>
-              <button
-                type="button"
-                className="btn-primary"
-                disabled={!hasKey || analyzeBusy}
-                onClick={() => void runAnalyze()}
-              >
-                {analyzeBusy ? "Đang phân tích…" : "Phân tích cùng AI"}
-              </button>
-              {analyzeBusy && !analyzeText ? (
-                <div className="mln-lab-output is-loading">
-                  AI đang phân tích số liệu…
-                </div>
-              ) : null}
-              {analyzeText ? (
-                <div className="mln-lab-output">
-                  <AiRichText text={analyzeText} />
-                </div>
-              ) : null}
-              <p className="mln-lab-note">
-                Số liệu bám docs Hostia + kịch bản slider đang mở (nếu có). Nội
-                dung AI mang tính minh hoạ học thuật.
-              </p>
-            </div>
-          ) : null}
-
-          {tab === "debate" ? (
-            <div className="mln-lab-body mln-debate">
-              <aside className="mln-debate-side">
-                <label className="mln-lab-field">
-                  <span>Chủ đề</span>
-                  <select
-                    value={topicId}
-                    onChange={(e) => setTopicId(e.target.value)}
-                    disabled={debateRunning}
-                  >
-                    {DEBATE_TOPICS.map((t) => (
-                      <option key={t.id} value={t.id}>
-                        {t.label}
-                      </option>
-                    ))}
-                    <option value="custom">Chủ đề khác…</option>
-                  </select>
-                </label>
-                {topicId === "custom" ? (
-                  <input
-                    type="text"
-                    className="mln-lab-input"
-                    value={customTopic}
-                    onChange={(e) => setCustomTopic(e.target.value)}
-                    placeholder="Nhập chủ đề tranh luận…"
-                    disabled={debateRunning}
-                  />
-                ) : null}
-
-                <div className="mln-lab-field">
-                  <span>Người tham gia (≥2)</span>
-                  <div className="mln-persona-pick">
-                    {DEBATE_PERSONAS.map((p) => (
-                      <label
-                        key={p.id}
-                        className="mln-persona"
-                        style={{ borderLeftColor: p.color }}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={selectedIds.includes(p.id)}
-                          onChange={() => togglePersona(p.id)}
-                          disabled={debateRunning}
-                        />
-                        <span style={{ color: p.color }}>{p.name}</span>
-                      </label>
-                    ))}
+            <header className="mln-chat-head">
+              <div className="mln-chat-brand">
+                <span className="mln-chat-mark" aria-hidden>
+                  AI
+                </span>
+                <div>
+                  <div className="mln-chat-title-row">
+                    <h3>World Cup Econ Lab</h3>
+                    <span className="mln-chat-badge">MLN122</span>
                   </div>
+                  <p>Phân tích, tranh luận, hỏi đáp theo góc nhìn kinh tế chính trị</p>
                 </div>
+              </div>
+              <button
+                type="button"
+                className="mln-chat-close"
+                onClick={() => setOpen(false)}
+                aria-label="Đóng"
+              >
+                ✕
+              </button>
+            </header>
 
-                <div className="mln-debate-actions">
-                  {!debateRunning ? (
-                    <button
-                      type="button"
-                      className="btn-primary"
-                      disabled={!hasKey || debateBusy}
-                      onClick={startDebate}
-                    >
-                      ▶ Bắt đầu tranh luận
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      className="btn-ghost mln-btn-warn"
-                      onClick={stopDebate}
-                    >
-                      ⏸ Dừng
-                    </button>
-                  )}
+            <div className="mln-lab-tabs" role="tablist">
+              {(
+                [
+                  ["analyze", "Phân tích", "Từ số liệu ra bài học"],
+                  ["debate", "Tranh luận", "Nhiều góc nhìn"],
+                  ["chat", "Hỏi đáp", "Trao đổi tự do"],
+                ] as const
+              ).map(([id, label, hint]) => (
+                <button
+                  key={id}
+                  type="button"
+                  role="tab"
+                  aria-selected={tab === id}
+                  className={`mln-lab-tab${tab === id ? " is-active" : ""}`}
+                  onClick={() => {
+                    setTab(id);
+                    setError(null);
+                  }}
+                >
+                  <span className="mln-lab-tab-label">{label}</span>
+                  <span className="mln-lab-tab-hint">{hint}</span>
+                </button>
+              ))}
+            </div>
+
+            {!hasKey ? (
+              <div className="mln-chat-key">
+                <div className="mln-chat-key-copy">
+                  <strong>Cần Gemini API key</strong>
+                  <p>
+                    Thêm <code>VITE_GEMINI_API_KEY</code> vào <code>.env.local</code> rồi
+                    chạy lại, hoặc dán key tạm bên dưới.
+                  </p>
+                </div>
+                <div className="mln-chat-key-row">
+                  <input
+                    type="password"
+                    value={apiKeyDraft}
+                    onChange={(e) => setApiKeyDraft(e.target.value)}
+                    placeholder="AIza..."
+                    autoComplete="off"
+                  />
                   <button
                     type="button"
-                    className="btn-ghost"
-                    onClick={resetDebate}
-                    disabled={debateRunning}
+                    className="btn-primary"
+                    onClick={handleSaveKey}
+                    disabled={!apiKeyDraft.trim()}
                   >
-                    ↺ Làm mới
+                    Lưu key
                   </button>
                 </div>
-              </aside>
+              </div>
+            ) : null}
 
-              <div className="mln-debate-main">
-                {turnProgress.max > 0 ? (
-                  <p className="mln-debate-progress">
-                    Lượt AI: {turnProgress.spoken}/{turnProgress.max}
-                    {debateRunning ? " · Đang chạy…" : ""}
-                    {turnProgress.spoken >= DEBATE_HARD_CAP
-                      ? " · Đã hết lượt tự động"
-                      : ""}
-                  </p>
-                ) : null}
-                <div className="mln-debate-transcript" ref={debateRef}>
-                  {transcript.length === 0 ? (
-                    <p className="mln-lab-empty">
-                      Mỗi vai nói 1 lần rồi dừng (tối đa {DEBATE_HARD_CAP} lượt
-                      AI). Chọn chủ đề + người tham gia, rồi bấm “Bắt đầu”.
+            {error ? <p className="mln-chat-error mln-lab-error">{error}</p> : null}
+
+            {tab === "analyze" ? (
+              <div className="mln-lab-body mln-lab-analyze">
+                {!analyzeText && !analyzeBusy ? (
+                  <div className="mln-analyze-hero">
+                    <span className="mln-analyze-icon" aria-hidden>
+                      ◈
+                    </span>
+                    <h4>Đọc số liệu theo góc nhìn Mác–Lênin</h4>
+                    <p>
+                      AI đọc các con số trong trang và giải thích ai làm ra của cải,
+                      ai hưởng, ai trả. Dùng làm chất liệu viết bài luận.
                     </p>
-                  ) : (
-                    transcript.map((t, i) =>
-                      t.speaker === "user" ? (
-                        <div key={i} className="mln-bubble mln-bubble-user">
-                          <div className="mln-bubble-who">Bạn</div>
-                          <div className="mln-bubble-body">{t.text}</div>
-                        </div>
-                      ) : (
-                        <div
-                          key={i}
-                          className="mln-bubble mln-bubble-ai"
-                          style={{ borderLeftColor: t.color }}
+                    <button
+                      type="button"
+                      className="btn-primary mln-analyze-cta"
+                      disabled={!hasKey || analyzeBusy}
+                      onClick={() => void runAnalyze()}
+                    >
+                      Phân tích cùng AI
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <div className="mln-analyze-toolbar">
+                      <button
+                        type="button"
+                        className="btn-ghost"
+                        disabled={!hasKey || analyzeBusy}
+                        onClick={() => void runAnalyze()}
+                      >
+                        {analyzeBusy ? "Đang phân tích…" : "Phân tích lại"}
+                      </button>
+                    </div>
+                    {analyzeBusy && !analyzeText ? (
+                      <div className="mln-lab-output is-loading">
+                        <span className="mln-typing-dots" aria-hidden>
+                          <i />
+                          <i />
+                          <i />
+                        </span>
+                        AI đang phân tích số liệu…
+                      </div>
+                    ) : null}
+                    {analyzeText ? (
+                      <div className="mln-lab-output">
+                        <AiRichText text={analyzeText} />
+                      </div>
+                    ) : null}
+                  </>
+                )}
+                <p className="mln-lab-note">
+                  Số liệu lấy từ tài liệu dự án và kịch bản bạn đang mở (nếu có).
+                  Câu trả lời của AI chỉ để tham khảo.
+                </p>
+              </div>
+            ) : null}
+
+            {tab === "debate" ? (
+              <div className="mln-lab-body mln-debate">
+                <aside className="mln-debate-side">
+                  <label className="mln-lab-field">
+                    <span>Chủ đề</span>
+                    <select
+                      value={topicId}
+                      onChange={(e) => setTopicId(e.target.value)}
+                      disabled={debateRunning}
+                    >
+                      {DEBATE_TOPICS.map((t) => (
+                        <option key={t.id} value={t.id}>
+                          {t.label}
+                        </option>
+                      ))}
+                      <option value="custom">Chủ đề khác…</option>
+                    </select>
+                  </label>
+                  {topicId === "custom" ? (
+                    <input
+                      type="text"
+                      className="mln-lab-input"
+                      value={customTopic}
+                      onChange={(e) => setCustomTopic(e.target.value)}
+                      placeholder="Nhập chủ đề tranh luận…"
+                      disabled={debateRunning}
+                    />
+                  ) : null}
+
+                  <div className="mln-lab-field">
+                    <span>Người tham gia (từ 2 trở lên)</span>
+                    <div className="mln-persona-pick">
+                      {DEBATE_PERSONAS.map((p) => (
+                        <label
+                          key={p.id}
+                          className={`mln-persona${selectedIds.includes(p.id) ? " is-on" : ""}`}
+                          style={{ ["--persona" as string]: p.color }}
                         >
+                          <input
+                            type="checkbox"
+                            checked={selectedIds.includes(p.id)}
+                            onChange={() => togglePersona(p.id)}
+                            disabled={debateRunning}
+                          />
+                          <span className="mln-persona-dot" aria-hidden />
+                          <span className="mln-persona-name">{p.name}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="mln-debate-actions">
+                    {!debateRunning ? (
+                      <button
+                        type="button"
+                        className="btn-primary"
+                        disabled={!hasKey || debateBusy}
+                        onClick={startDebate}
+                      >
+                        Bắt đầu tranh luận
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        className="btn-ghost mln-btn-warn"
+                        onClick={stopDebate}
+                      >
+                        Dừng
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      className="btn-ghost"
+                      onClick={resetDebate}
+                      disabled={debateRunning}
+                    >
+                      Làm mới
+                    </button>
+                  </div>
+                </aside>
+
+                <div className="mln-debate-main">
+                  {turnProgress.max > 0 ? (
+                    <div className="mln-debate-progress">
+                      <span>
+                        Lượt AI: {turnProgress.spoken}/{turnProgress.max}
+                      </span>
+                      <span className="mln-debate-status">
+                        {debateRunning
+                          ? "Đang chạy…"
+                          : turnProgress.spoken >= DEBATE_HARD_CAP
+                            ? "Hết lượt tự động"
+                            : "Tạm dừng"}
+                      </span>
+                    </div>
+                  ) : null}
+                  <div className="mln-debate-transcript" ref={debateRef}>
+                    {transcript.length === 0 ? (
+                      <div className="mln-lab-empty">
+                        <strong>Sẵn sàng tranh luận</strong>
+                        <p>
+                          Mỗi vai nói 1 lần rồi dừng (tối đa {DEBATE_HARD_CAP} lượt AI).
+                          Chọn chủ đề và người tham gia, rồi bấm Bắt đầu.
+                        </p>
+                      </div>
+                    ) : (
+                      transcript.map((t, i) =>
+                        t.speaker === "user" ? (
+                          <div key={i} className="mln-bubble mln-bubble-user">
+                            <div className="mln-bubble-who">Bạn</div>
+                            <div className="mln-bubble-body">{t.text}</div>
+                          </div>
+                        ) : (
                           <div
-                            className="mln-bubble-who"
-                            style={{ color: t.color }}
+                            key={i}
+                            className="mln-bubble mln-bubble-ai"
+                            style={{ borderLeftColor: t.color }}
                           >
-                            {t.name}
+                            <div
+                              className="mln-bubble-who"
+                              style={{ color: t.color }}
+                            >
+                              {t.name}
+                            </div>
+                            <div className="mln-bubble-body">
+                              <AiRichText text={t.text} />
+                            </div>
                           </div>
-                          <div className="mln-bubble-body">
-                            <AiRichText text={t.text} />
-                          </div>
+                        ),
+                      )
+                    )}
+                    {debateBusy ? (
+                      <div className="mln-bubble mln-bubble-ai is-typing">
+                        <span className="mln-typing-dots" aria-hidden>
+                          <i />
+                          <i />
+                          <i />
+                        </span>
+                        Đang suy nghĩ…
+                      </div>
+                    ) : null}
+                  </div>
+
+                  <div className="mln-debate-footer">
+                    {showContinue &&
+                    !debateRunning &&
+                    turnProgress.spoken < DEBATE_HARD_CAP ? (
+                      <button
+                        type="button"
+                        className="btn-ghost mln-continue"
+                        onClick={continueDebate}
+                        disabled={!hasKey || debateBusy}
+                      >
+                        Tiếp tục 1 vòng nữa
+                      </button>
+                    ) : (
+                      <p className="mln-lab-hint">
+                        Gõ để tham gia, hoặc bấm Bắt đầu để AI đối đáp nhau.
+                      </p>
+                    )}
+                  </div>
+                  <form
+                    className="mln-chat-form mln-chat-composer"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      void interject();
+                    }}
+                  >
+                    <input
+                      type="text"
+                      value={interjectInput}
+                      onChange={(e) => setInterjectInput(e.target.value)}
+                      placeholder="Nhập ý kiến vào cuộc tranh luận…"
+                      disabled={!hasKey || debateBusy}
+                      aria-label="Ý kiến tranh luận"
+                    />
+                    <button
+                      type="submit"
+                      className="btn-primary mln-send"
+                      disabled={!hasKey || debateBusy || !interjectInput.trim()}
+                    >
+                      Gửi
+                    </button>
+                  </form>
+                </div>
+              </div>
+            ) : null}
+
+            {tab === "chat" ? (
+              <div className="mln-lab-body mln-lab-chat">
+                <div className="mln-chat-messages" ref={chatRef}>
+                  {chatMessages.length === 0 ? (
+                    <div className="mln-chat-empty">
+                      <span className="mln-chat-empty-icon" aria-hidden>
+                        ✦
+                      </span>
+                      <p className="mln-chat-empty-title">Hỏi bất cứ điều gì về kinh tế World Cup</p>
+                      <p>
+                        AI trả lời ngắn gọn theo góc nhìn kinh tế chính trị Mác–Lênin,
+                        có số liệu khi phù hợp.
+                      </p>
+                      <div className="mln-chat-starters">
+                        {CHAT_STARTERS.map((s) => (
+                          <button
+                            key={s}
+                            type="button"
+                            className="mln-chat-starter"
+                            disabled={!hasKey || chatBusy}
+                            onClick={() => void sendChat(s)}
+                          >
+                            <span>{s}</span>
+                            <span className="mln-chat-starter-go" aria-hidden>
+                              →
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    chatMessages.map((m, i) => (
+                      <div
+                        key={`${m.role}-${i}`}
+                        className={`mln-chat-row mln-chat-row-${m.role}`}
+                      >
+                        <div
+                          className={`mln-chat-avatar mln-chat-avatar-${m.role}`}
+                          aria-hidden
+                        >
+                          {m.role === "user" ? "Bạn" : "AI"}
                         </div>
-                      ),
-                    )
+                        <div className={`mln-chat-bubble mln-chat-${m.role}`}>
+                          {m.role === "assistant" ? (
+                            <AiRichText text={m.content} />
+                          ) : (
+                            m.content
+                          )}
+                        </div>
+                      </div>
+                    ))
                   )}
-                  {debateBusy ? (
-                    <div className="mln-bubble mln-bubble-ai is-typing">
-                      Đang suy nghĩ…
+                  {chatBusy ? (
+                    <div className="mln-chat-row mln-chat-row-assistant">
+                      <div
+                        className="mln-chat-avatar mln-chat-avatar-assistant"
+                        aria-hidden
+                      >
+                        AI
+                      </div>
+                      <div className="mln-chat-bubble mln-chat-assistant mln-chat-typing">
+                        <span className="mln-typing-dots" aria-label="Đang suy nghĩ">
+                          <i />
+                          <i />
+                          <i />
+                        </span>
+                      </div>
                     </div>
                   ) : null}
                 </div>
-
-                <div className="mln-debate-footer">
-                  {showContinue &&
-                  !debateRunning &&
-                  turnProgress.spoken < DEBATE_HARD_CAP ? (
-                    <button
-                      type="button"
-                      className="btn-ghost mln-continue"
-                      onClick={continueDebate}
-                      disabled={!hasKey || debateBusy}
-                    >
-                      Tiếp tục 1 vòng nữa →
-                    </button>
-                  ) : (
-                    <p className="mln-lab-hint">
-                      Gõ để tự tham gia, hoặc bấm “Bắt đầu” để AI đối đáp nhau.
-                    </p>
-                  )}
-                </div>
                 <form
-                  className="mln-chat-form"
+                  className="mln-chat-form mln-chat-composer"
                   onSubmit={(e) => {
                     e.preventDefault();
-                    void interject();
+                    void sendChat(chatInput);
                   }}
                 >
                   <input
                     type="text"
-                    value={interjectInput}
-                    onChange={(e) => setInterjectInput(e.target.value)}
-                    placeholder="Nhập ý kiến vào cuộc tranh luận…"
-                    disabled={!hasKey || debateBusy}
-                    aria-label="Ý kiến tranh luận"
+                    value={chatInput}
+                    onChange={(e) => setChatInput(e.target.value)}
+                    placeholder={
+                      hasKey ? "Hỏi về FIFA, chi phí đăng cai, ai hưởng lợi…" : "Cần API key trước"
+                    }
+                    disabled={!hasKey || chatBusy}
+                    aria-label="Câu hỏi"
                   />
                   <button
                     type="submit"
-                    className="btn-primary"
-                    disabled={!hasKey || debateBusy || !interjectInput.trim()}
+                    className="btn-primary mln-send"
+                    disabled={!hasKey || chatBusy || !chatInput.trim()}
                   >
                     Gửi
                   </button>
                 </form>
               </div>
-            </div>
-          ) : null}
-
-          {tab === "chat" ? (
-            <div className="mln-lab-body mln-lab-chat">
-              <p className="mln-lab-lead">
-                Hỏi về kinh tế World Cup, kinh tế thể thao, hoặc nối khái niệm
-                với môn Kinh tế chính trị.
-              </p>
-              <div className="mln-chat-messages" ref={chatRef}>
-                {chatMessages.length === 0 ? (
-                  <div className="mln-chat-empty">
-                    <p className="mln-chat-empty-title">Bắt đầu bằng một câu hỏi</p>
-                    <p>Thử gợi ý dưới đây — AI trả lời theo góc nhìn KTCT.</p>
-                    <div className="mln-chat-starters">
-                      {CHAT_STARTERS.map((s) => (
-                        <button
-                          key={s}
-                          type="button"
-                          className="mln-chat-starter"
-                          disabled={!hasKey || chatBusy}
-                          onClick={() => void sendChat(s)}
-                        >
-                          {s}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                ) : (
-                  chatMessages.map((m, i) => (
-                    <div
-                      key={`${m.role}-${i}`}
-                      className={`mln-chat-row mln-chat-row-${m.role}`}
-                    >
-                      <div
-                        className={`mln-chat-avatar mln-chat-avatar-${m.role}`}
-                        aria-hidden
-                      >
-                        {m.role === "user" ? "Bạn" : "AI"}
-                      </div>
-                      <div
-                        className={`mln-chat-bubble mln-chat-${m.role}`}
-                      >
-                        {m.role === "assistant" ? (
-                          <AiRichText text={m.content} />
-                        ) : (
-                          m.content
-                        )}
-                      </div>
-                    </div>
-                  ))
-                )}
-                {chatBusy ? (
-                  <div className="mln-chat-row mln-chat-row-assistant">
-                    <div className="mln-chat-avatar mln-chat-avatar-assistant" aria-hidden>
-                      AI
-                    </div>
-                    <div className="mln-chat-bubble mln-chat-assistant mln-chat-typing">
-                      <span className="mln-typing-dots" aria-label="Đang suy nghĩ">
-                        <i />
-                        <i />
-                        <i />
-                      </span>
-                    </div>
-                  </div>
-                ) : null}
-              </div>
-              <form
-                className="mln-chat-form mln-chat-composer"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  void sendChat(chatInput);
-                }}
-              >
-                <input
-                  type="text"
-                  value={chatInput}
-                  onChange={(e) => setChatInput(e.target.value)}
-                  placeholder={hasKey ? "Nhập câu hỏi…" : "Cần API key trước"}
-                  disabled={!hasKey || chatBusy}
-                  aria-label="Câu hỏi"
-                />
-                <button
-                  type="submit"
-                  className="btn-primary"
-                  disabled={!hasKey || chatBusy || !chatInput.trim()}
-                >
-                  Gửi
-                </button>
-              </form>
-            </div>
-          ) : null}
+            ) : null}
           </div>
         </div>
       ) : null}
@@ -769,7 +829,25 @@ Với tư cách ${persona.name}, phản biện hoặc bổ sung TRỰC TIẾP ý
           aria-label="Mở World Cup Econ Lab"
           aria-expanded={false}
         >
-          💬
+          <svg
+            className="mln-chat-fab-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            aria-hidden
+          >
+            <path
+              d="M5.5 18.5 4 21l3.2-1.3A8.6 8.6 0 0 0 12 21c4.7 0 8.5-3.4 8.5-7.5S16.7 6 12 6 3.5 9.4 3.5 13.5c0 1.7.6 3.3 1.7 4.6l.3.4Z"
+              stroke="currentColor"
+              strokeWidth="1.7"
+              strokeLinejoin="round"
+            />
+            <path
+              d="M8.2 12.2h7.6M8.2 15h5.2"
+              stroke="currentColor"
+              strokeWidth="1.7"
+              strokeLinecap="round"
+            />
+          </svg>
         </button>
       ) : null}
     </div>

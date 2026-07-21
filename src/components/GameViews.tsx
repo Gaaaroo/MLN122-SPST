@@ -1,7 +1,8 @@
 /** Các mảnh giao diện dùng chung cho cả hotseat lẫn online. */
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { finalRanking, scorePlayer } from '../boardgameLogic';
 import { BOARD_TILES, COUNTRY_PROFILES } from '../boardgameData';
+import { playDiceLand, playDiceRattle, playMoveStep, playUiClick } from '../boardgameSound';
 import type { BuildOption, GameState } from '../boardgameTypes';
 
 export const PLAYER_COLORS = [
@@ -23,7 +24,7 @@ export function optionSummary(o: BuildOption): string {
     parts.push(`${o.socialHarmony > 0 ? '+' : ''}${o.socialHarmony} hài hòa`);
   }
   if (o.stadiums) parts.push(`+${o.stadiums} sân`);
-  return parts.join(' · ') || 'không đổi chỉ số';
+  return parts.join(', ') || 'không đổi chỉ số';
 }
 
 /** Kích thước lưới bàn cờ (N×N). Vành ngoài có 4*(N-1) ô = 20 ô với N=6. */
@@ -63,8 +64,10 @@ export function BoardLegend() {
 interface BoardTrackProps {
   game: GameState;
   canAct?: boolean;
-  /** Đang chạy hiệu ứng xúc xắc → khóa nút Gieo để khỏi bấm đúp. */
+  /** Đang chạy hiệu ứng xúc xắc / đi ô → khóa nút Gieo. */
   rollBusy?: boolean;
+  /** Vị trí hiển thị tạm (theo player id) khi token đang đi từng bước. */
+  displayPositions?: number[] | null;
   onRoll?: () => void;
 }
 
@@ -72,10 +75,18 @@ export function BoardTrack({
   game,
   canAct = false,
   rollBusy = false,
+  displayPositions = null,
   onRoll,
 }: BoardTrackProps) {
   const current = game.players[game.current]!;
   const color = PLAYER_COLORS[current.id];
+  const currentPos = displayPositions?.[current.id] ?? current.position;
+  const hereTile = BOARD_TILES[currentPos]!;
+
+  function posOf(playerId: number, fallback: number): number {
+    return displayPositions?.[playerId] ?? fallback;
+  }
+
   return (
     <div
       className='bg-ring'
@@ -91,44 +102,76 @@ export function BoardTrack({
           Liên minh
         </span>
         <span className='bg-ring-sub'>World Cup Economics</span>
+        <div
+          className='bg-ring-here'
+          style={{ borderColor: color }}
+        >
+          <span className='bg-ring-here-tag'>
+            {displayPositions ? 'Đang đi tới' : 'Đang đứng'}
+          </span>
+          <span className='bg-ring-here-tile'>
+            <span aria-hidden>{hereTile.icon}</span> {hereTile.label}
+          </span>
+          <span
+            className='bg-ring-here-who'
+            style={{ color }}
+          >
+            {current.name}
+          </span>
+        </div>
         {game.phase === 'rolling' && !rollBusy ? (
           canAct && onRoll ? (
-            <>
-              <span
-                className='bg-ring-turn'
-                style={{ color }}
-              >
-                {current.name}
-              </span>
-              <button
-                type='button'
-                className='btn-primary bg-ring-roll'
-                onClick={onRoll}
-              >
-                🎲 Gieo
-              </button>
-            </>
+            <button
+              type='button'
+              className='btn-primary bg-ring-roll'
+              onClick={() => {
+                playUiClick();
+                onRoll();
+              }}
+            >
+              🎲 Gieo
+            </button>
           ) : (
             <span className='bg-ring-wait'>
               ⏳ Chờ <strong style={{ color }}>{current.name}</strong> gieo…
             </span>
           )
         ) : (
-          game.lastRoll > 0 && (
+          game.lastRoll > 0 && !displayPositions && (
             <span className='bg-ring-die'>{DIE_FACES[game.lastRoll]}</span>
           )
         )}
       </div>
       {BOARD_TILES.map((t, i) => {
         const pos = ringPos(i);
-        const here = game.players.filter((p) => p.position === i);
+        const here = game.players.filter(
+          (p) => posOf(p.id, p.position) === i,
+        );
         const isCorner = i % (RING_N - 1) === 0;
+        const isCurrentHere = currentPos === i;
         return (
           <div
             key={t.id}
-            className={`bg-rtile ${isCorner ? 'corner' : ''} ${current.position === i ? 'active' : ''}`}
-            style={{ gridRow: pos.row, gridColumn: pos.col }}
+            className={`bg-rtile ${isCorner ? 'corner' : ''} ${isCurrentHere ? 'active here' : ''}`}
+            style={{
+              gridRow: pos.row,
+              gridColumn: pos.col,
+              ...(isCurrentHere
+                ? ({
+                    ['--here-color' as string]: color,
+                  } as CSSProperties)
+                : undefined),
+            }}
+            aria-current={isCurrentHere ? 'true' : undefined}
           >
+            {isCurrentHere && (
+              <span
+                className='bg-rtile-pin'
+                style={{ background: color }}
+              >
+                {displayPositions ? 'Đi…' : 'Bạn đây'}
+              </span>
+            )}
             {t.group && (
               <span
                 className='bg-rtile-band'
@@ -146,10 +189,16 @@ export function BoardTrack({
               <div className='bg-rtokens'>
                 {here.map((p) => (
                   <span
-                    key={p.id}
-                    className='bg-token xs'
+                    key={`${p.id}-${posOf(p.id, p.position)}`}
+                    className={`bg-token xs${p.id === current.id ? ' pulse' : ''}${
+                      p.id === current.id && displayPositions ? ' hopping' : ''
+                    }`}
                     style={{ background: PLAYER_COLORS[p.id] }}
-                    title={p.name}
+                    title={
+                      p.id === current.id
+                        ? `${p.name} — đang đứng đây`
+                        : p.name
+                    }
                   >
                     {p.id + 1}
                   </span>
@@ -163,17 +212,37 @@ export function BoardTrack({
   );
 }
 
+const STEP_MS = 220;
+const DICE_SPIN_MS = 620;
+const DICE_LEAVE_AT = 1350;
+const DICE_DONE_AT = 1650;
+
+/** Các ô token đi qua sau khi đổ `steps` từ vị trí `from`. */
+function walkPath(from: number, steps: number, tileCount: number): number[] {
+  const path: number[] = [];
+  let p = from;
+  for (let i = 0; i < steps; i++) {
+    p = (p + 1) % tileCount;
+    path.push(p);
+  }
+  return path;
+}
+
 /**
- * Lớp phủ "zoom" xúc xắc: khi có lượt đổ mới, phóng to con xúc xắc ra giữa màn
- * hình cho dễ nhìn, quay vài nhịp rồi dừng đúng số đã đổ (`game.lastRoll`), sau
- * đó tự tắt. Chạy chung cho cả hotseat lẫn online — mọi máy đều thấy cú đổ.
+ * Lớp phủ xúc xắc + sau đó báo “đã đổ xong” để cha cho token đi từng bước.
+ * Chạy chung hotseat lẫn online.
  */
 function DiceRollOverlay({
   game,
   onBusyChange,
+  onHoldAtOrigin,
+  onDiceFinished,
 }: {
   game: GameState;
   onBusyChange?: (busy: boolean) => void;
+  /** Giữ token ở ô xuất phát trong lúc xúc xắc quay. */
+  onHoldAtOrigin?: () => void;
+  onDiceFinished?: () => void;
 }) {
   const [dice, setDice] = useState<{
     face: number;
@@ -182,14 +251,15 @@ function DiceRollOverlay({
   const lastSig = useRef<string | null>(null);
   const initialized = useRef(false);
   const timers = useRef<number[]>([]);
+  const finishRef = useRef(onDiceFinished);
+  finishRef.current = onDiceFinished;
+  const holdRef = useRef(onHoldAtOrigin);
+  holdRef.current = onHoldAtOrigin;
 
   const rolled = game.phase === 'choosing' || game.phase === 'result';
-  // Mỗi (lượt, người chơi) chỉ đổ đúng một lần → dùng làm chữ ký cú đổ.
   const sig = `${game.turn}-${game.current}`;
 
   useEffect(() => {
-    // Vào ván ngay giữa lượt (ví dụ mới join phòng online): nhận cú đổ hiện tại
-    // là "đã xem", không phát hiệu ứng.
     if (!initialized.current) {
       initialized.current = true;
       if (rolled && game.lastRoll >= 1) {
@@ -204,8 +274,9 @@ function DiceRollOverlay({
     timers.current.forEach((t) => window.clearInterval(t));
     timers.current = [];
 
-    // Bắt đầu đổ: báo "bận" để bảng hành động ẩn đi cho đến khi xúc xắc dừng.
     onBusyChange?.(true);
+    holdRef.current?.();
+    playDiceRattle();
     const result = game.lastRoll;
     const spin = window.setInterval(() => {
       setDice({ face: 1 + Math.floor(Math.random() * 6), stage: 'spin' });
@@ -215,16 +286,17 @@ function DiceRollOverlay({
       window.setTimeout(() => {
         window.clearInterval(spin);
         setDice({ face: result, stage: 'land' });
-      }, 620),
+        playDiceLand();
+      }, DICE_SPIN_MS),
       window.setTimeout(
         () => setDice((d) => (d ? { ...d, stage: 'leave' } : d)),
-        1350,
+        DICE_LEAVE_AT,
       ),
       window.setTimeout(() => {
-        // Xúc xắc biến mất → mới cho phép thẻ/bảng lệnh hiện ra.
         setDice(null);
-        onBusyChange?.(false);
-      }, 1650),
+        // Xúc xắc xong → cha bắt đầu cho token đi từng ô (vẫn giữ busy).
+        finishRef.current?.();
+      }, DICE_DONE_AT),
     );
   }, [sig, rolled, game.lastRoll, onBusyChange]);
 
@@ -261,24 +333,33 @@ function DiceRollOverlay({
 export function PlayerCards({
   game,
   myPlayerId,
+  displayPositions = null,
 }: {
   game: GameState;
   myPlayerId?: number;
+  displayPositions?: number[] | null;
 }) {
   return (
     <section className='bg-players'>
       {game.players.map((p) => {
         const sc = scorePlayer(p);
+        const tileIdx = displayPositions?.[p.id] ?? p.position;
+        const tile = BOARD_TILES[tileIdx]!;
+        const isTurn = p.id === game.current;
         return (
           <article
             key={p.id}
-            className={`bg-player panel ${p.id === game.current ? 'active' : ''}`}
+            className={`bg-player panel ${isTurn ? 'active' : ''}`}
             style={{ borderTopColor: PLAYER_COLORS[p.id] }}
           >
             <h4 style={{ color: PLAYER_COLORS[p.id] }}>
               {p.name}
               {p.id === myPlayerId ? ' (bạn)' : ''}
+              {isTurn ? ' · đang chơi' : ''}
             </h4>
+            <p className={`bg-player-loc${isTurn ? ' now' : ''}`}>
+              <span aria-hidden>{tile.icon}</span> {tile.label}
+            </p>
             <div className='bg-pstats'>
               <span className={p.budgetB < 0 ? 'neg' : ''}>
                 💰 {nf(p.budgetB)} tỷ
@@ -287,7 +368,7 @@ export function PlayerCards({
               <span>🤝 {p.socialHarmony} hài hòa</span>
               <span>✈️ {nf(p.tourismIncomeB)} tỷ</span>
               <span>🏟️ {p.stadiumsBuilt} sân</span>
-              <span className='bg-pnet'>Phúc lợi ròng: {sc.net}đ</span>
+              <span className='bg-pnet'>Điểm phúc lợi: {sc.net}</span>
             </div>
           </article>
         );
@@ -387,7 +468,10 @@ function TurnPopups({ game, canAct, onChoose, onNext }: TurnPopupsProps) {
                   type='button'
                   className='bg-option'
                   disabled={!canAct}
-                  onClick={() => onChoose(o.id)}
+                  onClick={() => {
+                    playUiClick();
+                    onChoose(o.id);
+                  }}
                 >
                   <span className='bg-option-label'>{o.label}</span>
                   <span className='bg-option-cost'>Chi {nf(o.costB)} tỷ</span>
@@ -449,7 +533,10 @@ function TurnPopups({ game, canAct, onChoose, onNext }: TurnPopupsProps) {
               <button
                 type='button'
                 className='btn-primary bg-ok-btn'
-                onClick={onNext}
+                onClick={() => {
+                  playUiClick();
+                  onNext();
+                }}
               >
                 OK — sang lượt
               </button>
@@ -485,28 +572,99 @@ export function PlayArea({
   onNext,
   myPlayerId,
 }: PlayAreaProps) {
-  // Đang chạy hiệu ứng xúc xắc → giấu popup; chỉ hiện thẻ (kèm animation) sau
-  // khi con xúc xắc dừng, để "xúc xắc trước, thẻ sau".
-  const [rollBusy, setRollBusy] = useState(false);
+  // Đang xúc xắc hoặc token đang đi từng ô → giấu popup cho đến khi xong.
+  const [fxBusy, setFxBusy] = useState(false);
+  const [displayPositions, setDisplayPositions] = useState<number[] | null>(
+    null,
+  );
+  const walkTimers = useRef<number[]>([]);
+  const gameRef = useRef(game);
+  gameRef.current = game;
+
+  useEffect(
+    () => () => {
+      walkTimers.current.forEach((t) => window.clearTimeout(t));
+    },
+    [],
+  );
+
+  function holdTokenAtOrigin() {
+    const g = gameRef.current;
+    const player = g.players[g.current]!;
+    const roll = g.lastRoll;
+    const tileCount = BOARD_TILES.length;
+    if (roll < 1) return;
+    const from = (player.position - roll + tileCount) % tileCount;
+    const startPos = g.players.map((p) => p.position);
+    startPos[player.id] = from;
+    setDisplayPositions(startPos);
+  }
+
+  function startTokenWalk() {
+    const g = gameRef.current;
+    const player = g.players[g.current]!;
+    const roll = g.lastRoll;
+    const tileCount = BOARD_TILES.length;
+    if (roll < 1) {
+      setDisplayPositions(null);
+      setFxBusy(false);
+      return;
+    }
+
+    const to = player.position;
+    const from = (to - roll + tileCount) % tileCount;
+    const path = walkPath(from, roll, tileCount);
+
+    const startPos = g.players.map((p) => p.position);
+    startPos[player.id] = from;
+    setDisplayPositions(startPos);
+
+    walkTimers.current.forEach((t) => window.clearTimeout(t));
+    walkTimers.current = [];
+
+    path.forEach((tileIdx, i) => {
+      walkTimers.current.push(
+        window.setTimeout(() => {
+          setDisplayPositions((prev) => {
+            const next = [...(prev ?? startPos)];
+            next[player.id] = tileIdx;
+            return next;
+          });
+          playMoveStep();
+          if (i === path.length - 1) {
+            walkTimers.current.push(
+              window.setTimeout(() => {
+                setDisplayPositions(null);
+                setFxBusy(false);
+              }, 180),
+            );
+          }
+        }, i * STEP_MS),
+      );
+    });
+  }
 
   return (
     <div className='bg-play'>
       <DiceRollOverlay
         game={game}
-        onBusyChange={setRollBusy}
+        onBusyChange={setFxBusy}
+        onHoldAtOrigin={holdTokenAtOrigin}
+        onDiceFinished={startTokenWalk}
       />
       <div className='bg-play-board'>
         <BoardLegend />
         <BoardTrack
           game={game}
           canAct={canAct}
-          rollBusy={rollBusy}
+          rollBusy={fxBusy}
+          displayPositions={displayPositions}
           onRoll={() => {
-            setRollBusy(true); // khóa nút Gieo ngay, chờ hiệu ứng xúc xắc
+            setFxBusy(true);
             onRoll();
           }}
         />
-        {!rollBusy && (
+        {!fxBusy && (
           <TurnPopups
             game={game}
             canAct={canAct}
@@ -518,6 +676,7 @@ export function PlayArea({
       <PlayerCards
         game={game}
         myPlayerId={myPlayerId}
+        displayPositions={displayPositions}
       />
     </div>
   );
@@ -528,12 +687,15 @@ export function EndScreen({
   onReplay,
   onExit,
   replayLabel = 'Chơi lại',
+  replayDisabled = false,
   myPlayerId,
 }: {
   game: GameState;
   onReplay: () => void;
   onExit: () => void;
   replayLabel?: string;
+  /** Online: chỉ chủ phòng mới bấm chơi lại được. */
+  replayDisabled?: boolean;
   myPlayerId?: number;
 }) {
   const ranking = finalRanking(game);
@@ -561,7 +723,7 @@ export function EndScreen({
               <span className='bg-rank-arch'>
                 {COUNTRY_PROFILES[player.profile].label}
               </span>
-              <span className='bg-rank-net'>{score.net}đ</span>
+              <span className='bg-rank-net'>{score.net} điểm</span>
             </div>
             <div className='bg-breakdown'>
               <span className='bg-chip up'>+{score.legacy} di sản</span>
@@ -598,14 +760,21 @@ export function EndScreen({
         <button
           type='button'
           className='btn-primary'
-          onClick={onReplay}
+          disabled={replayDisabled}
+          onClick={() => {
+            playUiClick();
+            onReplay();
+          }}
         >
           {replayLabel}
         </button>
         <button
           type='button'
           className='btn-ghost'
-          onClick={onExit}
+          onClick={() => {
+            playUiClick();
+            onExit();
+          }}
         >
           Thoát
         </button>

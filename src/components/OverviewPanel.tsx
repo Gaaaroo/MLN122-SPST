@@ -8,7 +8,6 @@ import {
 } from '../overviewTypes';
 import {
   formatUsdB,
-  MLN_CONNECTIONS,
   TEAM_EXPANSION_BENEFITS,
 } from '../realWorldData';
 import FactsPanel from './FactsPanel';
@@ -69,11 +68,12 @@ function MetricBar({
   invert?: boolean;
   explain?: MetricExplanation;
 }) {
-  const display = invert ? 100 - value : value;
+  // Bar luôn chạy đúng giá trị; `invert` chỉ đảo màu (giá trị cao = xấu = đỏ).
+  const goodness = invert ? 100 - value : value;
   const color =
-    display >= 65
+    goodness >= 65
       ? 'var(--green)'
-      : display >= 40
+      : goodness >= 40
         ? 'var(--yellow)'
         : 'var(--red)';
 
@@ -84,12 +84,12 @@ function MetricBar({
           {label}
           {explain ? <WhyHint explain={explain} /> : null}
         </span>
-        <span className='mono'>{invert ? value : display} / 100</span>
+        <span className='mono'>{Math.round(value)} / 100</span>
       </div>
       <div className='ov-bar-track'>
         <div
           className='ov-bar-fill'
-          style={{ width: `${display}%`, background: color }}
+          style={{ width: `${value}%`, background: color }}
         />
       </div>
       {hint ? <div className='ov-metric-hint'>{hint}</div> : null}
@@ -175,15 +175,15 @@ export default function OverviewPanel({ initial, onBack, onPlayGame }: Props) {
           ⚖️
         </span>
         <div className='ov-mln-banner-text'>
-          <h2>Nhìn dashboard này bằng lăng kính Kinh tế chính trị Mác–Lênin</h2>
+          <h2>Nhìn các con số này theo Kinh tế chính trị Mác–Lênin</h2>
           <p>
             Mọi con số bên dưới đều xoay quanh một câu hỏi:{' '}
-            <strong>ai tạo ra giá trị · ai sở hữu · ai hưởng · ai trả?</strong>
+            <strong>ai làm ra của cải, ai sở hữu, ai hưởng, ai trả?</strong>
           </p>
         </div>
       </section>
 
-      {showFacts ? <FactsPanel liveHostCostB={outcome.hostCostUsd} /> : null}
+      {showFacts ? <FactsPanel /> : null}
 
       <div className='overview-grid'>
         <aside className='panel ov-controls'>
@@ -251,7 +251,7 @@ export default function OverviewPanel({ initial, onBack, onPlayGame }: Props) {
             min={4}
             max={8}
             onChange={(v) => patch({ asiaSlots: v })}
-            hint='Số vé cho châu Á: 4 suất thời giải 32 đội, lên 8 suất từ World Cup 2026.'
+            hint='Số vé cho châu Á: thời 32 đội có 4,5 suất (4 + play-off), từ World Cup 2026 tăng lên 8,33 suất.'
           />
           <Slider
             label='Ưu tiên thị trường Trung Quốc'
@@ -342,7 +342,7 @@ export default function OverviewPanel({ initial, onBack, onPlayGame }: Props) {
             </div>
             <div className='ov-mini-card risk'>
               <div className='ov-mini-label'>
-                Sân trắng
+                Sân bỏ không
                 {explainById.get('whiteElephantRisk') ? (
                   <WhyHint explain={explainById.get('whiteElephantRisk')!} />
                 ) : null}
@@ -385,17 +385,6 @@ export default function OverviewPanel({ initial, onBack, onPlayGame }: Props) {
               hint='Càng cao thì FIFA và giới đầu tư càng hưởng nhiều, người lao động và dân chịu thiệt.'
               explain={explainById.get('inequalityIndex')}
             />
-
-            <div className='ov-mln-links'>
-              <h4>World Cup soi dưới Kinh tế chính trị Mác–Lênin</h4>
-              <ul>
-                {MLN_CONNECTIONS.map((m) => (
-                  <li key={m.concept}>
-                    <strong>{m.concept}.</strong> {m.text}
-                  </li>
-                ))}
-              </ul>
-            </div>
           </section>
 
           <section className='ov-echo panel-inner'>
@@ -411,10 +400,10 @@ export default function OverviewPanel({ initial, onBack, onPlayGame }: Props) {
                 <p>
                   {outcome.realWorldEcho.blurb}
                   {outcome.realWorldEcho.hostCostUsd != null
-                    ? ` · Chi phí: ~${formatUsdB(
+                    ? ` Chi phí khoảng ${formatUsdB(
                         outcome.realWorldEcho.hostCostUsd,
                         outcome.realWorldEcho.hostCostUsd % 1 === 0 ? 0 : 1,
-                      )}`
+                      )}.`
                     : ''}
                 </p>
               </div>

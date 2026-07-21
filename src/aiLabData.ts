@@ -88,10 +88,10 @@ export const DEBATE_TOPICS: DebateTopic[] = [
 export function buildStaticLabContext(): string {
   return [
     `Số liệu Hostia / docs MLN122 (không bịa ngoài nguồn dự án):`,
-    `- Doanh thu FIFA chu kỳ 2023–2026 (dự kiến): ~$${FIFA_REVENUE.CYCLE_2023_2026_PROJECTED}B`,
-    `- Cơ cấu WC 2026 (ước tính): TV ~$${FIFA_REVENUE.WC2026_TV}B · vé ~$${FIFA_REVENUE.WC2026_TICKETS}B · tài trợ ~$${FIFA_REVENUE.WC2026_SPONSOR}B`,
+    `- Doanh thu FIFA chu kỳ 2023–2026: dự kiến ~$${FIFA_REVENUE.CYCLE_2023_2026_PROJECTED}B, sau giải 2026 công bố vượt $${FIFA_REVENUE.CYCLE_2023_2026_ANNOUNCED}B (7/2026)`,
+    `- Cơ cấu ngân sách WC 2026 ban đầu: TV ~$${FIFA_REVENUE.WC2026_TV}B · vé ~$${FIFA_REVENUE.WC2026_TICKETS}B · tài trợ ~$${FIFA_REVENUE.WC2026_SPONSOR}B (thực tế vé/VIP vượt xa)`,
     `- Quy mô 2026: ${TOURNAMENT_FORMAT.TEAMS_48} đội, ${TOURNAMENT_FORMAT.MATCHES_48_TEAM} trận, ${TOURNAMENT_FORMAT.WC2026_STADIUMS} sân (${TOURNAMENT_FORMAT.WC2026_USA_STADIUMS} Mỹ / ${TOURNAMENT_FORMAT.WC2026_MEXICO_STADIUMS} Mexico / ${TOURNAMENT_FORMAT.WC2026_CANADA_STADIUMS} Canada)`,
-    `- Tác động kinh tế liên minh 2026 (dự phóng docs): tổng ~$${WC2026_ECONOMIC.ALLIANCE_TOTAL_B}B GDP; Mỹ ~$${WC2026_ECONOMIC.USA_GDP_IMPACT_B}B; Canada (Deloitte) ~$${WC2026_ECONOMIC.CANADA_DELOITTE_B}B; Mexico ~$${WC2026_ECONOMIC.MEXICO_DELOITTE_B}B`,
+    `- Tác động kinh tế 2026 (dự phóng do FIFA/WTO đặt làm — giới phân tích cho là lạc quan): GDP toàn cầu ~$${WC2026_ECONOMIC.GLOBAL_GDP_B}B; Mỹ ~$${WC2026_ECONOMIC.USA_GDP_IMPACT_B}B; Canada (Deloitte) ~$${WC2026_ECONOMIC.CANADA_DELOITTE_B}B; Mexico ~$${WC2026_ECONOMIC.MEXICO_DELOITTE_B}B`,
     `- Qatar 2022: tổng hạ tầng gắn WC ~$${HOST_COST_BY_EDITION.QATAR_2022_TOTAL}B (sân ~$${HOST_COST_BY_EDITION.QATAR_2022_STADIUMS}B)`,
     `- Brazil 2014 ~$${HOST_COST_BY_EDITION.BRAZIL_2014}B · Nga 2018 ~$${HOST_COST_BY_EDITION.RUSSIA_2018}B · Nam Phi 2010 ~$${HOST_COST_BY_EDITION.SOUTH_AFRICA_2010}B`,
     `- FIFA thường ~$${FIFA_REVENUE.TYPICAL_LOW}–${FIFA_REVENUE.TYPICAL_HIGH}B/chu kỳ; nhiều nghiên cứu cảnh báo lợi ích host thường bị phóng đại.`,

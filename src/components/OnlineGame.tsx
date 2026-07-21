@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { endTurn, resolveChoice, rollAndMove } from "../boardgameLogic";
-import { COUNTRY_PROFILES } from "../boardgameData";
+import { BOARD_TILES, COUNTRY_PROFILES } from "../boardgameData";
 import type { CountryArchetype } from "../boardgameTypes";
 import { firebaseReady } from "../firebase";
 import {
@@ -271,7 +271,9 @@ export default function OnlineGame({ onBack }: Props) {
               )}
             </>
           ) : (
-            <p className="bg-wait">⏳ Đang chờ chủ phòng bắt đầu…</p>
+            <p className="bg-wait">
+              ⏳ Đang chờ chủ phòng bắt đầu… (ván {room.turnsPerPlayer} lượt/người)
+            </p>
           )}
         </section>
       </div>
@@ -291,13 +293,14 @@ export default function OnlineGame({ onBack }: Props) {
           </button>
           <div>
             <h1 className="bg-h1">Kết quả</h1>
-            <p className="bg-sub">Xếp theo điểm phúc lợi ròng.</p>
+            <p className="bg-sub">Xếp hạng theo điểm phúc lợi.</p>
           </div>
         </header>
         <EndScreen
           game={game}
           myPlayerId={myPlayerId}
           replayLabel={isHost ? "Về sảnh, chơi lại" : "Chờ chủ phòng…"}
+          replayDisabled={!isHost}
           onReplay={() => isHost && code && backToLobby(code)}
           onExit={leave}
         />
@@ -315,7 +318,7 @@ export default function OnlineGame({ onBack }: Props) {
         </button>
         <div className="bg-turnmeta">
           <span className="bg-turn-count">
-            Lượt {game.turn}/{game.turnsPerPlayer} · Phòng {room.code}
+            Lượt {game.turn}/{game.turnsPerPlayer} - Phòng {room.code}
           </span>
           <span className="bg-turn-now">
             Đến lượt:{" "}
@@ -323,6 +326,10 @@ export default function OnlineGame({ onBack }: Props) {
               {current.name}
               {current.id === myPlayerId ? " (bạn)" : ""}
             </strong>
+          </span>
+          <span className="bg-turn-loc">
+            Đang ở: {BOARD_TILES[current.position]!.icon}{" "}
+            {BOARD_TILES[current.position]!.label}
           </span>
         </div>
         <span className="bg-fifa-pill">Két FIFA: {nf(game.fifaBankB)} tỷ</span>

@@ -9,7 +9,6 @@ import {
   HOST_COST_BY_EDITION,
   SHOCK_FACTS,
   TOURNAMENT_FORMAT,
-  costContextLine,
 } from "../realWorldData";
 
 type Tab = "shock" | "costs" | "benefits" | "gap";
@@ -18,16 +17,14 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "shock", label: "Số liệu" },
   { id: "costs", label: "Chi tiền gì?" },
   { id: "benefits", label: "Được gì?" },
-  { id: "gap", label: "Kỳ vọng vs thật" },
+  { id: "gap", label: "Lời hứa và thực tế" },
 ];
 
 interface Props {
-  /** Chi phí host đang ước tính trên overview — hiện context dòng */
-  liveHostCostB?: number;
   compact?: boolean;
 }
 
-export default function FactsPanel({ liveHostCostB, compact }: Props) {
+export default function FactsPanel({ compact }: Props) {
   const [tab, setTab] = useState<Tab>("shock");
 
   return (
@@ -36,19 +33,12 @@ export default function FactsPanel({ liveHostCostB, compact }: Props) {
         <div>
           <h2>World Cup thật sự tốn bao nhiêu — và vì sao ai cũng muốn đăng cai?</h2>
           <p className="facts-sub">
-            Chi phí đăng cai đã tăng từ {HOST_COST_BY_EDITION.SOUTH_AFRICA_2010} tỷ USD
+            Chi phí đăng cai đã tăng từ {HOST_COST_BY_EDITION.SOUTH_AFRICA_2010.toLocaleString("vi-VN")} tỷ USD
             (Nam Phi 2010) lên {HOST_COST_BY_EDITION.QATAR_2022_TOTAL} tỷ USD (Qatar 2022) —
-            chỉ cho một tháng bóng đá. Trong khi đó FIFA thu về khoảng{" "}
-            {FIFA_REVENUE.CYCLE_2023_2026_PROJECTED} tỷ USD mỗi kỳ.
+            chỉ cho một tháng bóng đá. Trong khi đó FIFA công bố thu hơn{" "}
+            {FIFA_REVENUE.CYCLE_2023_2026_ANNOUNCED} tỷ USD trong chu kỳ 2023 đến 2026.
           </p>
         </div>
-        {liveHostCostB !== undefined && (
-          <div className="facts-live-cost">
-            <span className="facts-live-label">Kịch bản của bạn</span>
-            <span className="facts-live-value">${liveHostCostB.toFixed(1)}B</span>
-            <span className="facts-live-hint">{costContextLine(liveHostCostB)}</span>
-          </div>
-        )}
       </div>
 
       <div className="facts-tabs">

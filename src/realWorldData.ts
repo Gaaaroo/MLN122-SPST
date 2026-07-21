@@ -3,30 +3,35 @@
  * Nguồn: docs/chi-phi-*.md, docs/world-cup-2026-*.md
  */
 
-/** Doanh thu FIFA theo chu kỳ 4 năm (tỷ USD) — theo docs */
+/** Doanh thu FIFA theo chu kỳ 4 năm (tỷ USD) — theo docs + báo cáo FIFA */
 export const FIFA_REVENUE = {
   /** Docs: FIFA thường bỏ túi khoảng 7–9 tỷ mỗi chu kỳ */
   TYPICAL_LOW: 7.0,
   TYPICAL_HIGH: 9.0,
-  /** Ngân sách / doanh thu dự kiến chu kỳ 2023–2026 (48 đội) */
+  /** Ngân sách / doanh thu dự kiến ban đầu chu kỳ 2023–2026 (48 đội) */
   CYCLE_2023_2026_PROJECTED: 11.0,
+  /** FIFA công bố sau giải 2026 (7/2026): chu kỳ vượt 15 tỷ — nhờ vé & gói VIP giá cao */
+  CYCLE_2023_2026_ANNOUNCED: 15.0,
   /** Mốc mô phỏng 32 đội (giữa khoảng 7–9) */
   BASE_32_TEAM: 7.0,
-  BASE_48_TEAM: 11.0,
-  /** Cơ cấu doanh thu WC 2026 (dự kiến, tỷ USD) */
+  BASE_48_TEAM: 15.0,
+  /** Cơ cấu doanh thu WC 2026 theo ngân sách ban đầu (tỷ USD) — thực tế vé/VIP vượt xa */
   WC2026_TV: 4.2,
   WC2026_SPONSOR: 2.7,
   WC2026_TICKETS: 3.0,
-  /** FIFA hỗ trợ 3 nước đăng cai 2026 */
+  /** FIFA hỗ trợ sân bãi 3 nước đăng cai 2026 (ước 200–400 triệu, lấy mốc cao) */
   WC2026_HOST_SUPPORT: 0.4,
+  /** Tiền thưởng đội tuyển 2026 — FIFA Council chốt 12/2025 (vô địch 50 triệu) */
   WC2026_PRIZE_MONEY: 0.655,
 } as const;
 
 /**
- * Chi phí đăng cai có trong docs (tỷ USD).
- * Không gắn số “host cost tổng” cho Đức 2006 hay WC 2026 — docs không đưa một tổng duy nhất đáng tin.
+ * Chi phí đăng cai (tỷ USD) — docs + Statista (1994–2022).
+ * Không gắn số “host cost tổng” cho WC 2026 — chưa có một tổng duy nhất đáng tin.
  */
 export const HOST_COST_BY_EDITION = {
+  /** Statista: tổng chi Đức 2006 ~4,3 tỷ (sân ~1,6 tỷ) */
+  GERMANY_2006: 4.3,
   SOUTH_AFRICA_2010: 3.6,
   BRAZIL_2014: 15.0,
   RUSSIA_2018: 11.6,
@@ -37,11 +42,12 @@ export const HOST_COST_BY_EDITION = {
   QATAR_LUSAIL_CITY: 45.0,
 } as const;
 
-/** Tác động kinh tế WC 2026 (dự phóng trong docs — không phải “chi phí đăng cai tổng”) */
+/** Tác động kinh tế WC 2026 (dự phóng — không phải “chi phí đăng cai tổng”) */
 export const WC2026_ECONOMIC = {
   FIFA_REVENUE_B: 11.0,
   USA_GDP_IMPACT_B: 17.2,
-  ALLIANCE_TOTAL_B: 40.9,
+  /** GDP TOÀN CẦU theo nghiên cứu FIFA–WTO (OpenEconomics) — không phải riêng 3 nước chủ nhà */
+  GLOBAL_GDP_B: 40.9,
   CANADA_DELOITTE_B: 2.7,
   MEXICO_DELOITTE_B: 4.05,
   FEDERAL_SECURITY_TRANSPORT_M: 625,
@@ -67,8 +73,8 @@ export const EXPECTATION_GAP: ExpectationGapEntry[] = [
     id: "usa-1994",
     name: "Mỹ 1994",
     expectedB: 4,
-    actualB: 2,
-    note: "Ban tổ chức hứa nền kinh tế được lợi khoảng 4 tỷ. Thực tế nhiều thành phố còn lỗ, vì khách đến xem bóng thay vì đi tiêu chỗ khác.",
+    actualNote: "các thành phố lỗ 5,5 đến 9,3 tỷ",
+    note: "Ban tổ chức hứa nền kinh tế được lợi khoảng 4 tỷ. Nghiên cứu của Baade và Matheson đo lại sau giải: các thành phố đăng cai thu nhập còn thấp hơn bình thường, tổng thiệt khoảng 5,5 đến 9,3 tỷ.",
   },
   {
     id: "france-1998",
@@ -88,8 +94,8 @@ export const EXPECTATION_GAP: ExpectationGapEntry[] = [
     id: "japan-2002",
     name: "Nhật Bản 2002",
     expectedB: 24.8,
-    actualB: 2.4,
-    note: "Dự báo tới gần 25 tỷ. Thực tế thấp hơn rất nhiều, lại rơi đúng lúc kinh tế Nhật đang yếu.",
+    actualNote: "không đo được tác động rõ",
+    note: "Viện Dentsu dự báo tới gần 25 tỷ. Nghiên cứu sau giải không đo được tác động rõ rệt nào — giải lại rơi đúng lúc kinh tế Nhật trì trệ.",
   },
   {
     id: "germany-2006",
@@ -103,22 +109,22 @@ export const EXPECTATION_GAP: ExpectationGapEntry[] = [
     name: "Nam Phi 2010",
     expectedB: 9,
     expectedRange: "hứa lời 6–12 tỷ",
-    actualB: 0.3,
-    note: "Thực tế chỉ khoảng 0,3 tỷ, thấp hơn cả chục lần lời hứa. Khách quốc tế đến ít hơn nhiều so với dự báo, chính phủ còn lỗ.",
+    actualB: 0.5,
+    note: "Chỉ 309.000 khách đến vì giải (dự báo 483.000), chi khoảng 0,5 tỷ. Trừ đi lượng khách thường tránh mùa giải, lợi ròng còn thấp hơn — kém lời hứa cả chục lần.",
   },
   {
     id: "brazil-2014",
     name: "Brazil 2014",
     expectedRange: "chính phủ nói tới ~70 tỷ",
-    actualB: 2.4,
-    note: "Con số hứa hẹn cực lớn, nhưng chi phí đội gấp khoảng 5 lần dự toán và dân xuống đường phản đối. Lợi ích thật thấp hơn nhiều.",
+    actualB: 1.0,
+    note: "Đón khoảng 1 triệu khách quốc tế nhưng Ngân hàng Trung ương Brazil chỉ đo được thêm cỡ 1 tỷ từ khách nước ngoài. Chi phí đội vốn nhiều lần và dân xuống đường phản đối.",
   },
   {
     id: "russia-2018",
     name: "Nga 2018",
     expectedRange: "hứa 26–31 tỷ trong 10 năm",
     actualB: 14.5,
-    note: "Chính phủ nói đóng góp khoảng 14,5 tỷ cho GDP nhiều năm. Nhiều chuyên gia cho rằng riêng du lịch thật chỉ cỡ 1 tỷ.",
+    note: "Ban tổ chức nhà nước tự công bố đóng góp 14,5 tỷ cho GDP giai đoạn 2013–2018. Giới nghiên cứu độc lập ước riêng du lịch thật chỉ mang về khoảng 1–3 tỷ.",
   },
   {
     id: "qatar-2022",
@@ -130,7 +136,7 @@ export const EXPECTATION_GAP: ExpectationGapEntry[] = [
 ];
 
 export const EXPECTATION_GAP_SOURCES =
-  "Statista · Wikipedia (Economics of the FIFA World Cup) · nghiên cứu của Baade & Matheson, Allmers & Maennig · tài liệu môn MLN122";
+  "Statista, nghiên cứu Baade & Matheson (2004), Lee & Taylor (2005), Allmers & Maennig, Baumann & Matheson, Ngân hàng Trung ương Brazil, IMF, tài liệu môn MLN122";
 
 export const FIFA_STADIUM_CAPACITY = {
   GROUP: 40_000,
@@ -199,9 +205,9 @@ export const SHOCK_FACTS: ShockFact[] = [
   },
   {
     id: "qatar-scale",
-    headline: "220 tỷ đủ mua cả Netflix, McDonald's, Nike lẫn Disney",
+    headline: "220 tỷ đủ mua đứt Netflix, McDonald's, Nike hoặc Disney",
     detail:
-      "Hoặc đủ nuôi NASA (khoảng 25 tỷ mỗi năm) trong gần 9 năm, tính cả chương trình lên Mặt Trăng và sao Hỏa.",
+      "Đủ mua trọn từng công ty một (theo giá trị năm 2022). Hoặc đủ nuôi NASA (khoảng 25 tỷ mỗi năm) trong gần 9 năm, tính cả chương trình lên Mặt Trăng và sao Hỏa.",
     tag: "Qatar 2022",
   },
   {
@@ -215,12 +221,12 @@ export const SHOCK_FACTS: ShockFact[] = [
     id: "winner-curse",
     headline: "Càng cố thắng quyền đăng cai càng dễ lỗ",
     detail:
-      "Nam Phi từng mơ lời 6–12 tỷ, thực tế chỉ khoảng 0,3 tỷ. Hồ sơ đấu thầu hay tô hồng để giành phiếu.",
+      "Nam Phi từng mơ lời 6–12 tỷ, thực tế khách chỉ chi khoảng 0,5 tỷ. Hồ sơ đấu thầu hay tô hồng để giành phiếu.",
     tag: "Kỳ vọng",
   },
   {
     id: "white-elephant",
-    headline: "Sân trắng — xây xong rồi bỏ không",
+    headline: "Sân xây xong rồi bỏ không",
     detail:
       "Sân Arena da Amazônia ở Brazil có 44.000 chỗ nằm giữa rừng Amazon; sau giải gần như bỏ hoang mà vẫn tốn tiền bảo trì.",
     tag: "Di sản",
@@ -229,7 +235,14 @@ export const SHOCK_FACTS: ShockFact[] = [
     id: "wc2026",
     headline: "2026: 3 nước, 16 sân có sẵn, 48 đội",
     detail:
-      "Mỹ 11 sân, Mexico 3, Canada 2, tận dụng sân bóng bầu dục có sẵn. FIFA dự thu khoảng 11 tỷ; Mỹ tổ chức phần lớn số trận (78 trên 104).",
+      "Mỹ 11 sân, Mexico 3, Canada 2, tận dụng sân bóng bầu dục có sẵn. FIFA dự thu 11 tỷ nhưng sau giải công bố vượt 15 tỷ; Mỹ tổ chức phần lớn số trận (78 trên 104).",
+    tag: "WC 2026",
+  },
+  {
+    id: "wc2026-city-bill",
+    headline: "11 thành phố Mỹ hụt ít nhất 250 triệu đô tiền tổ chức",
+    detail:
+      "Hợp đồng với FIFA cấm thành phố bán tài trợ cạnh tranh với đối tác của FIFA, trong khi mỗi nơi phải tự lo 100 đến 200 triệu chi phí an ninh, giao thông, lễ hội fan.",
     tag: "WC 2026",
   },
 ];
@@ -291,7 +304,7 @@ export const HOST_BENEFITS: BenefitItem[] = [
     title: "Du lịch bùng nổ",
     icon: "✈️",
     summary:
-      "Qatar 2022 đón 1,4 triệu khách, IMF ước giúp GDP tăng khoảng 0,7–1%. Ở Brazil, doanh thu quanh khu cổ động viên tăng gấp 3–4 lần.",
+      "Qatar 2022 đón khoảng 1–1,4 triệu khách (IMF ước ~1 triệu); giúp GDP năm đó tăng khoảng 0,7–1%. Ở Brazil, doanh thu quanh khu cổ động viên tăng gấp 3–4 lần.",
   },
   {
     id: "deadline",
@@ -370,7 +383,7 @@ export function estimateFifaRevenueB(params: {
 
   return Math.max(
     FIFA_REVENUE.TYPICAL_LOW,
-    Math.min(FIFA_REVENUE.CYCLE_2023_2026_PROJECTED + 0.5, revenue),
+    Math.min(FIFA_REVENUE.CYCLE_2023_2026_ANNOUNCED + 0.5, revenue),
   );
 }
 
@@ -405,20 +418,4 @@ export function formatUsdB(value: number, digits = 1): string {
   const n = Number.isFinite(value) ? value : 0;
   if (digits === 0) return `$${Math.round(n)}B`;
   return `$${n.toFixed(digits)}B`;
-}
-
-export function costContextLine(costB: number): string {
-  if (costB >= 100) {
-    return "Quy mô kiểu Qatar: gồm metro/sân bay/thành phố mới — không chỉ sân bóng.";
-  }
-  if (costB >= 12) {
-    return `Gần mức Brazil 2014 (khoảng ${formatUsdB(15, 0)}) — thừa sức lo nước sạch cho hàng chục triệu người.`;
-  }
-  if (costB >= 8) {
-    return `Gần mức Nga 2018 (khoảng ${formatUsdB(11.6)}) — sân và giao thông hay đội vốn.`;
-  }
-  if (costB >= 3) {
-    return `Gần mức Nam Phi 2010 (khoảng ${formatUsdB(3.6)}) — vẫn lớn hơn cả nền kinh tế của nhiều nước nhỏ hồi đó.`;
-  }
-  return "Mức tiết kiệm: tận dụng sân có sẵn, giống World Cup 2026 hay Đức.";
 }

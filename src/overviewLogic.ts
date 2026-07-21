@@ -55,9 +55,10 @@ const CASE_PROFILES: Record<string, Partial<OverviewConfig>> = {
     asiaSlots: 4,
     chinaPriority: 30,
   },
+  // Qatar: nhà nước chi gần như toàn bộ (quỹ nhà nước, Vision 2030) — không phải tư nhân dẫn dắt
   "qatar-2022": {
     infrastructure: 95,
-    publicPrivate: 80,
+    publicPrivate: 30,
     socialSpend: 20,
     tourismFocus: 85,
     laborProtection: 15,
@@ -316,7 +317,7 @@ function buildMetricExplanations(
         c.infrastructure <= 35
           ? `Đầu tư thấp thì chi phí gần mức Nam Phi 2010 (khoảng 3,6 tỷ USD) nhờ tận dụng sân có sẵn.`
           : c.infrastructure <= 75
-            ? `Đầu tư vừa thì chi phí rơi vào khoảng giữa Nam Phi và Brazil, tầm ${o.hostCostUsd.toFixed(1)} tỷ USD cho sân và giao thông.`
+            ? `Đầu tư vừa thì chi phí rơi vào khoảng giữa Nam Phi và Brazil, tầm ${o.hostCostUsd.toFixed(1).replace(".", ",")} tỷ USD cho sân và giao thông.`
             : `Đầu tư rất lớn thì chi phí vọt lên cỡ Qatar (khoảng ${o.hostCostUsd.toFixed(0)} tỷ USD), vì phải làm cả tàu điện, sân bay, thành phố mới.`,
     },
   ]);
@@ -416,13 +417,13 @@ function buildMetricExplanations(
     {
       id: "fifaRevenue",
       label: "FIFA thu",
-      summary: `Khoảng ${o.fifaRevenue.toFixed(1)} tỷ USD mỗi kỳ. Đây là tiền FIFA thu về; nước chủ nhà gần như không được chia phần bản quyền truyền hình.`,
+      summary: `Khoảng ${o.fifaRevenue.toFixed(1).replace(".", ",")} tỷ USD mỗi chu kỳ 4 năm (mô hình giải 48 đội — chu kỳ 2023–2026 FIFA công bố vượt 15 tỷ). Đây là tiền FIFA thu về; nước chủ nhà gần như không được chia phần bản quyền truyền hình.`,
       drivers: fifaDrivers,
     },
     {
       id: "hostCostUsd",
       label: "Chi phí nước chủ nhà",
-      summary: `Khoảng ${o.hostCostUsd.toFixed(1)} tỷ USD, ước theo các kỳ thật (Nam Phi 3,6 tỷ đến Qatar 220 tỷ). Đây là tiền nước chủ nhà bỏ ra cho sân, tàu điện, an ninh.`,
+      summary: `Khoảng ${o.hostCostUsd.toFixed(1).replace(".", ",")} tỷ USD, ước theo các kỳ thật (Nam Phi 3,6 tỷ đến Qatar 220 tỷ). Đây là tiền nước chủ nhà bỏ ra cho sân, tàu điện, an ninh.`,
       drivers: hostCostDrivers,
     },
     {
@@ -433,7 +434,7 @@ function buildMetricExplanations(
     },
     {
       id: "whiteElephantRisk",
-      label: "Sân trắng",
+      label: "Sân bỏ không",
       summary: `Khoảng ${o.whiteElephantRisk.toFixed(0)}% (mức ${riskLevel(o.whiteElephantRisk)}). Xây quá nhiều và để tư nhân dẫn dắt thì dễ để lại sân, tàu điện bỏ không sau giải.`,
       drivers: whiteElephantDrivers,
     },

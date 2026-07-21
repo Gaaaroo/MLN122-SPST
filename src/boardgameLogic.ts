@@ -107,7 +107,7 @@ function applyEvent(player: Player, card: EventCard): { fifaGainB: number; log: 
     player.budgetB += hit;
     parts.push(
       player.stadiumsBuilt > 0
-        ? `${hit} tỷ (${player.stadiumsBuilt} sân × ${card.budgetPerStadium})`
+        ? `${hit} tỷ bảo trì (${player.stadiumsBuilt} sân, mỗi sân mất ${Math.abs(card.budgetPerStadium)} tỷ)`
         : "chưa xây sân mới nên thoát",
     );
   }

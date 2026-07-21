@@ -171,6 +171,11 @@
   font-size: 1.05rem;
 }
 
+.bg-turn-loc {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
 .bg-fifa-pill {
   background: rgba(239, 68, 68, 0.12);
   border: 1px solid rgba(239, 68, 68, 0.4);
@@ -812,6 +817,40 @@
   line-height: 1;
 }
 
+/* Ô đang đứng — giữa bàn cờ */
+.bg-ring-here {
+  margin-top: 0.35rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 10px;
+  border: 1.5px solid var(--cyan);
+  background: rgba(6, 182, 212, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.08rem;
+  max-width: 92%;
+}
+
+.bg-ring-here-tag {
+  font-size: clamp(0.55rem, 1.3vw, 0.68rem);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.bg-ring-here-tile {
+  font-weight: 700;
+  font-size: clamp(0.72rem, 1.8vw, 0.92rem);
+  color: var(--text);
+  line-height: 1.2;
+  text-align: center;
+}
+
+.bg-ring-here-who {
+  font-size: clamp(0.62rem, 1.5vw, 0.78rem);
+  font-weight: 600;
+}
+
 /* Nút Gieo ngay giữa bàn cờ khi tới lượt */
 .bg-ring-turn {
   font-weight: 800;
@@ -845,7 +884,10 @@
 @media (prefers-reduced-motion: reduce) {
   .bg-ring-roll,
   .bg-choose-auto,
-  .bg-choose-timer.danger {
+  .bg-choose-timer.danger,
+  .bg-rtile-pin,
+  .bg-token.xs.pulse,
+  .bg-token.xs.hopping {
     animation: none;
   }
 }
@@ -874,10 +916,40 @@
   border-color: var(--muted);
 }
 
-.bg-rtile.active {
-  border-color: var(--cyan);
-  box-shadow: 0 0 0 1px var(--cyan), 0 4px 14px rgba(6, 182, 212, 0.3);
+.bg-rtile.active,
+.bg-rtile.here {
+  border-color: var(--here-color, var(--cyan));
+  box-shadow:
+    0 0 0 2px var(--here-color, var(--cyan)),
+    0 6px 18px color-mix(in srgb, var(--here-color, var(--cyan)) 45%, transparent);
   z-index: 2;
+  transform: scale(1.06);
+}
+
+.bg-rtile-pin {
+  position: absolute;
+  top: -0.55rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #07121c;
+  padding: 0.12rem 0.4rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  z-index: 3;
+  animation: bg-pin-bounce 1.1s ease-in-out infinite;
+}
+
+@keyframes bg-pin-bounce {
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    transform: translateX(-50%) translateY(-2px);
+  }
 }
 
 .bg-rtile-band {
@@ -914,6 +986,53 @@
   width: 15px;
   height: 15px;
   font-size: 0.6rem;
+}
+
+.bg-token.xs.pulse {
+  width: 18px;
+  height: 18px;
+  font-size: 0.68rem;
+  outline: 2px solid #fff;
+  outline-offset: 1px;
+  animation: bg-token-pulse 1s ease-in-out infinite;
+}
+
+.bg-token.xs.hopping {
+  animation: bg-token-hop 0.22s ease-out;
+}
+
+@keyframes bg-token-hop {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  40% {
+    transform: translateY(-6px) scale(1.2);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes bg-token-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+}
+
+.bg-player-loc {
+  margin: 0 0 0.4rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1.25;
+}
+
+.bg-player-loc.now {
+  color: var(--text);
+  font-weight: 600;
 }
 
 @media (max-width: 900px) {

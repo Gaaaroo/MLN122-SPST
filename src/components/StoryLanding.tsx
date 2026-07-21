@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   SCROLL_ACHIEVE,
   SCROLL_BEFORE_AFTER,
@@ -11,7 +11,9 @@ import {
   SCROLL_PROFIT,
   SCROLL_REVENUE,
   SCROLL_RISKS,
+  type ScrollTakeaway,
 } from '../landingContent';
+import { MLN_CONNECTIONS } from '../realWorldData';
 import MlnChatBot from './MlnChatBot';
 
 interface Props {
@@ -23,7 +25,7 @@ function SplitTitle({ line1, line2 }: { line1: string; line2: string }) {
   return (
     <h2 className='scroll-title'>
       <span>{line1}</span>
-      <span>{line2}</span>
+      {line2 ? <span>{line2}</span> : null}
     </h2>
   );
 }
@@ -54,8 +56,53 @@ function ChapterHead({
   );
 }
 
+function ChapterTakeaway({ takeaway }: { takeaway: ScrollTakeaway }) {
+  return (
+    <aside
+      className='scroll-takeaway'
+      data-reveal
+    >
+      <p className='scroll-takeaway-tag'>Điều rút ra</p>
+      <h3 className='scroll-takeaway-concept'>{takeaway.concept}</h3>
+      <p className='scroll-takeaway-body'>{takeaway.body}</p>
+    </aside>
+  );
+}
+
+function LessonCard({
+  index,
+  title,
+  body,
+  className = '',
+}: {
+  index: string;
+  title: string;
+  body: string;
+  className?: string;
+}) {
+  return (
+    <article
+      className={`scroll-lesson ${className}`.trim()}
+      data-reveal
+    >
+      <span>{index}</span>
+      <h3>{title}</h3>
+      <p>{body}</p>
+    </article>
+  );
+}
+
 export function StoryLanding({ onExplore, onPlayGame }: Props) {
   const rootRef = useRef<HTMLDivElement>(null);
+  // Lăn quá đầu trang thì ẩn dòng tên môn ở giữa topbar để không đè lên chữ các chương.
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 80);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   useEffect(() => {
     if (!rootRef.current) return;
@@ -78,7 +125,7 @@ export function StoryLanding({ onExplore, onPlayGame }: Props) {
       className='scroll-book is-unlocked'
       ref={rootRef}
     >
-      <header className='scroll-topbar'>
+      <header className={`scroll-topbar${scrolled ? ' is-scrolled' : ''}`}>
         <p className='scroll-topbar-brand'>
           {SCROLL_META.brand}
           <span>{SCROLL_META.brandYear}</span>
@@ -189,6 +236,7 @@ export function StoryLanding({ onExplore, onPlayGame }: Props) {
             </article>
           ))}
         </div>
+        <ChapterTakeaway takeaway={SCROLL_COSTS.takeaway} />
         <p
           className='scroll-foot'
           data-reveal
@@ -244,6 +292,7 @@ export function StoryLanding({ onExplore, onPlayGame }: Props) {
             ))}
           </div>
         </div>
+        <ChapterTakeaway takeaway={SCROLL_REVENUE.takeaway} />
       </section>
 
       {/* 03 PROFIT */}
@@ -286,19 +335,16 @@ export function StoryLanding({ onExplore, onPlayGame }: Props) {
           ))}
         </div>
         <div
-          className='scroll-lesson-grid'
+          className='scroll-lesson-grid cols-3'
           style={{ marginTop: '2rem' }}
         >
           {SCROLL_PROFIT.points.map((p, i) => (
-            <article
+            <LessonCard
               key={p.title}
-              className='scroll-lesson'
-              data-reveal
-            >
-              <span>0{i + 1}</span>
-              <h3>{p.title}</h3>
-              <p>{p.body}</p>
-            </article>
+              index={`0${i + 1}`}
+              title={p.title}
+              body={p.body}
+            />
           ))}
         </div>
         <div
@@ -329,6 +375,7 @@ export function StoryLanding({ onExplore, onPlayGame }: Props) {
             </ul>
           </article>
         </div>
+        <ChapterTakeaway takeaway={SCROLL_PROFIT.takeaway} />
       </section>
 
       {/* 04 ACHIEVEMENTS */}
@@ -344,17 +391,15 @@ export function StoryLanding({ onExplore, onPlayGame }: Props) {
         />
         <div className='scroll-lesson-grid'>
           {SCROLL_ACHIEVE.items.map((item) => (
-            <article
+            <LessonCard
               key={item.index}
-              className='scroll-lesson'
-              data-reveal
-            >
-              <span>{item.index}</span>
-              <h3>{item.title}</h3>
-              <p>{item.body}</p>
-            </article>
+              index={item.index}
+              title={item.title}
+              body={item.body}
+            />
           ))}
         </div>
+        <ChapterTakeaway takeaway={SCROLL_ACHIEVE.takeaway} />
       </section>
 
       {/* 05 BEFORE / AFTER */}
@@ -397,6 +442,7 @@ export function StoryLanding({ onExplore, onPlayGame }: Props) {
             </article>
           ))}
         </div>
+        <ChapterTakeaway takeaway={SCROLL_BEFORE_AFTER.takeaway} />
       </section>
 
       {/* 06 RISKS */}
@@ -412,17 +458,15 @@ export function StoryLanding({ onExplore, onPlayGame }: Props) {
         />
         <div className='scroll-lesson-grid'>
           {SCROLL_RISKS.items.map((item) => (
-            <article
+            <LessonCard
               key={item.index}
-              className='scroll-lesson'
-              data-reveal
-            >
-              <span>{item.index}</span>
-              <h3>{item.title}</h3>
-              <p>{item.body}</p>
-            </article>
+              index={item.index}
+              title={item.title}
+              body={item.body}
+            />
           ))}
         </div>
+        <ChapterTakeaway takeaway={SCROLL_RISKS.takeaway} />
       </section>
 
       {/* 07 HARMS */}
@@ -438,20 +482,19 @@ export function StoryLanding({ onExplore, onPlayGame }: Props) {
         />
         <div className='scroll-lesson-grid'>
           {SCROLL_HARMS.items.map((item) => (
-            <article
+            <LessonCard
               key={item.index}
-              className='scroll-lesson harm'
-              data-reveal
-            >
-              <span>{item.index}</span>
-              <h3>{item.title}</h3>
-              <p>{item.body}</p>
-            </article>
+              index={item.index}
+              title={item.title}
+              body={item.body}
+              className='harm'
+            />
           ))}
         </div>
+        <ChapterTakeaway takeaway={SCROLL_HARMS.takeaway} />
       </section>
 
-      {/* LESSONS */}
+      {/* LESSONS — khung MLN122 (nội dung cố định từ MLN_CONNECTIONS) */}
       <section className='scroll-chapter scroll-lessons'>
         <div
           className='scroll-chapter-head'
@@ -459,18 +502,16 @@ export function StoryLanding({ onExplore, onPlayGame }: Props) {
         >
           <p className='scroll-chapter-label'>{SCROLL_LESSONS.chapter}</p>
           <h2 className='scroll-title single'>{SCROLL_LESSONS.title}</h2>
+          <p className='scroll-lead'>{SCROLL_LESSONS.lead}</p>
         </div>
         <div className='scroll-lesson-grid'>
-          {SCROLL_LESSONS.items.map((item) => (
-            <article
-              key={item.index}
-              className='scroll-lesson'
-              data-reveal
-            >
-              <span>{item.index}</span>
-              <h3>{item.title}</h3>
-              <p>{item.body}</p>
-            </article>
+          {MLN_CONNECTIONS.map((item, i) => (
+            <LessonCard
+              key={item.concept}
+              index={`0${i + 1}`}
+              title={item.concept}
+              body={item.text}
+            />
           ))}
         </div>
       </section>
@@ -501,7 +542,7 @@ export function StoryLanding({ onExplore, onPlayGame }: Props) {
             </button>
             <button
               type='button'
-              className='btn-ghost'
+              className='btn-secondary'
               onClick={onPlayGame}
             >
               Chơi cờ tỷ phú

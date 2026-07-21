@@ -55,7 +55,7 @@ export const COUNTRY_PROFILES: Record<CountryArchetype, CountryProfile> = {
 
 /**
  * Bàn cờ vòng vuông 20 ô (kiểu Monopoly): 4 góc + 4 ô mỗi cạnh, đi 1 vòng = 1 kỳ World Cup.
- * Góc: 0 Khởi hành (GO), 5 Sân bay quốc tế, 10 Hội nghị G20, 15 Cẩm vận.
+ * Góc: 0 Khởi hành (GO), 5 Sân bay quốc tế, 10 Hội nghị G20, 15 Cấm vận.
  * Ô "xây" (sân/metro/an sinh) có dải màu nhóm như địa ốc Monopoly; cơ chế giữ nguyên.
  */
 export const BOARD_TILES: Tile[] = [
@@ -73,7 +73,7 @@ export const BOARD_TILES: Tile[] = [
     kind: "stadium",
     label: "Sân Hà Nội",
     icon: "🏟️",
-    blurb: "FIFA đòi sân vòng bảng ≥40.000 chỗ. Tái dùng rẻ, xây mới đắt và dễ bỏ không.",
+    blurb: "FIFA đòi sân vòng bảng ít nhất 40.000 chỗ. Tái dùng rẻ, xây mới đắt và dễ bỏ không.",
     group: GROUP.south,
   },
   {
@@ -166,7 +166,7 @@ export const BOARD_TILES: Tile[] = [
     kind: "transport",
     label: "Metro Paris",
     icon: "🚇",
-    blurb: "Metro Doha ~36 tỷ là ví dụ giao thông ngốn tiền hơn cả sân.",
+    blurb: "Metro Doha khoảng 36 tỷ là ví dụ giao thông ngốn tiền hơn cả sân.",
     group: GROUP.north,
   },
   {
@@ -176,11 +176,11 @@ export const BOARD_TILES: Tile[] = [
     icon: "✈️",
     blurb: "Mùa giải kéo khách và truyền thông — nhưng sôi động xong rồi lắng.",
   },
-  // Góc: Cẩm vận (chỉ ghé qua, không tốn gì)
+  // Góc: Cấm vận (chỉ ghé qua, không tốn gì)
   {
     id: "embargo",
     kind: "corner",
-    label: "Cẩm vận",
+    label: "Cấm vận",
     icon: "🔒",
     blurb: "Chỉ ghé qua — mọi thứ chững lại, bạn không tốn gì lượt này.",
   },
@@ -262,8 +262,8 @@ export const TRANSPORT_OPTIONS: BuildOption[] = [
   },
   {
     id: "metro",
-    label: "Metro mới (kiểu Doha ~36 tỷ)",
-    hint: "Đắt nhưng dân dùng dài hạn — di sản cao nhất.",
+    label: "Metro mới (kiểu Doha khoảng 36 tỷ)",
+    hint: "Đắt nhưng dân dùng dài hạn, di sản cao nhất.",
     costB: 18,
     legacy: 14,
     socialHarmony: 5,
@@ -358,7 +358,7 @@ export const EVENT_DECK: EventCard[] = [
     id: "winner-curse",
     title: "Lời hứa vỡ mộng",
     detail:
-      "Nam Phi 2010 mơ lời 6–12 tỷ, thực tế chỉ ~0,3 tỷ. Khách quốc tế đến ít hơn nhiều so với dự báo.",
+      "Nam Phi 2010 mơ lời 6 đến 12 tỷ, thực tế khách chỉ chi khoảng 0,5 tỷ. Khách quốc tế đến ít hơn nhiều so với dự báo.",
     tag: "Kỳ vọng",
     tourismIncomeB: -2,
   },
@@ -366,7 +366,7 @@ export const EVENT_DECK: EventCard[] = [
     id: "tourism-boom",
     title: "Bùng nổ du lịch",
     detail:
-      "Qatar 2022 đón 1,4 triệu khách; IMF ước GDP tăng khoảng 0,7–1% nhờ mùa giải.",
+      "Qatar 2022 đón khoảng 1 đến 1,4 triệu khách; IMF ước GDP tăng khoảng 0,7 đến 1% nhờ mùa giải.",
     tag: "Du lịch",
     tourismIncomeB: 2,
   },
@@ -374,7 +374,7 @@ export const EVENT_DECK: EventCard[] = [
     id: "bid-cost",
     title: "Chi phí đấu thầu",
     detail:
-      "Chỉ riêng làm hồ sơ xin đăng cai đã tốn 50–150 triệu USD, thua là mất trắng.",
+      "Chỉ riêng làm hồ sơ xin đăng cai đã tốn 50 đến 150 triệu USD, thua là mất trắng.",
     tag: "Chi phí ẩn",
     budgetB: -1,
   },
@@ -382,7 +382,7 @@ export const EVENT_DECK: EventCard[] = [
     id: "jobs",
     title: "Việc làm ba giai đoạn",
     detail:
-      "Xây dựng → dịch vụ thời vụ → vận hành lâu dài. Nếu quy hoạch tử tế, di sản việc làm ở lại.",
+      "Đầu tiên là xây dựng, rồi tới dịch vụ thời vụ, cuối cùng là vận hành lâu dài. Nếu quy hoạch tử tế, di sản việc làm ở lại.",
     tag: "Lao động",
     socialHarmony: 5,
     legacy: 3,

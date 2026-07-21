@@ -11,13 +11,13 @@ interface Props {
 export function LandingScreen({ onExplore }: Props) {
   return (
     <div className="landing">
-      <p className="landing-kicker">MLN122 · Kinh tế chính trị · World Cup</p>
+      <p className="landing-kicker">MLN122 - Kinh tế chính trị World Cup</p>
       <h1>
         Hostia <span>2034</span>
       </h1>
       <p className="subtitle">
-        Một tháng bóng đá. Hàng chục — thậm chí hàng trăm — tỷ đô. FIFA thu bản quyền;
-        nước chủ nhà trả sân, metro, an ninh. Ai thắng thật?
+        Một tháng bóng đá, hàng chục thậm chí hàng trăm tỷ đô. FIFA thu tiền bản quyền,
+        còn nước chủ nhà trả tiền sân, tàu điện, an ninh. Vậy ai mới thắng thật?
       </p>
 
       <div className="landing-stats" aria-label="Chi phí đăng cai theo kỳ">
@@ -41,9 +41,9 @@ export function LandingScreen({ onExplore }: Props) {
         </div>
         <div className="landing-stat highlight">
           <span className="landing-stat-num">
-            {formatUsdB(FIFA_REVENUE.CYCLE_2023_2026_PROJECTED, 0)}
+            {formatUsdB(FIFA_REVENUE.CYCLE_2023_2026_ANNOUNCED, 0)}
           </span>
-          <span className="landing-stat-label">FIFA dự thu 2026</span>
+          <span className="landing-stat-label">FIFA thu chu kỳ 2026</span>
         </div>
       </div>
       <p className="landing-stat-note">
@@ -52,15 +52,16 @@ export function LandingScreen({ onExplore }: Props) {
 
       <div className="landing-actions">
         <button type="button" className="btn-primary" onClick={onExplore}>
-          Khám phá số liệu + kéo slider
+          Khám phá số liệu
         </button>
       </div>
       <p className="landing-hint">
-        Đọc case thật (Đức → Qatar → 2026), kéo slider — xem ai thắng, ai trả trên bảng phân
-        phối.
+        Đọc chuyện thật từ Đức 2006 đến Qatar 2022, kéo thử các thanh trượt và xem
+        ai được lợi, ai phải trả tiền.
       </p>
       <p className="footer-note">
-        Soft power · Sân trắng (voi trắng) · Nhượng quyền FIFA · 48 đội 2026
+        Quyền lực mềm, sân xây xong bỏ không, mô hình nhượng quyền của FIFA và giải
+        48 đội năm 2026.
       </p>
     </div>
   );

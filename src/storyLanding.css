@@ -16,6 +16,39 @@
   overflow-x: hidden;
 }
 
+/* Đoạn văn / danh sách: căn đều hai bên */
+.scroll-book p,
+.scroll-book li {
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+/* Giữ căn giữa cho hero, tiêu đề chương, footer CTA */
+.scroll-book .scroll-chapter-head,
+.scroll-book .scroll-chapter-head p,
+.scroll-book .scroll-hero,
+.scroll-book .scroll-hero p,
+.scroll-book .scroll-hero cite,
+.scroll-book .scroll-close,
+.scroll-book .scroll-close p,
+.scroll-book .scroll-kicker,
+.scroll-book .scroll-chapter-label,
+.scroll-book .scroll-title,
+.scroll-book .scroll-hero-title,
+.scroll-book .scroll-lead,
+.scroll-book .scroll-foot,
+.scroll-book .scroll-hint,
+.scroll-book .scroll-subhead,
+.scroll-book .scroll-credit,
+.scroll-book .scroll-split-tag,
+.scroll-book .scroll-means-title,
+.scroll-book .scroll-era-headline,
+.scroll-book .scroll-era-inner,
+.scroll-book .scroll-era-meta,
+.scroll-book .scroll-era-note {
+  text-align: center;
+}
+
 /* Top bar */
 .scroll-topbar {
   position: fixed;
@@ -37,6 +70,8 @@
 }
 
 .scroll-topbar-brand {
+  position: relative;
+  z-index: 1;
   font-family: var(--sb-display);
   font-weight: 800;
   font-size: 1rem;
@@ -51,11 +86,27 @@
 }
 
 .scroll-topbar-course {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   margin: 0;
+  max-width: min(42vw, 28rem);
+  text-align: center;
   font-size: 0.72rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   opacity: 0.75;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+/* Lăn xuống nội dung → ẩn dòng tên môn ở giữa, khỏi đè lên chữ các chương */
+.scroll-topbar.is-scrolled .scroll-topbar-course {
+  opacity: 0;
 }
 
 .scroll-topbar-cta {
@@ -75,6 +126,8 @@
 }
 
 .scroll-topbar-actions {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -283,12 +336,49 @@
 }
 
 .scroll-foot {
-  margin: 2.5rem auto 0;
+  margin: 1.25rem auto 0;
   max-width: 42rem;
   text-align: center;
   color: var(--sb-muted);
   line-height: 1.55;
   font-size: 0.82rem;
+}
+
+/* Đúc kết MLN — một ý / một chương */
+.scroll-takeaway {
+  margin: 3rem auto 0;
+  max-width: 42rem;
+  padding: 1.4rem 1.6rem 1.5rem;
+  background: var(--sb-panel);
+  border: 1px solid var(--sb-line);
+  border-left: 3px solid var(--sb-accent);
+  text-align: left;
+}
+
+.scroll-takeaway-tag {
+  margin: 0 0 0.45rem;
+  font-family: var(--mono, "JetBrains Mono", monospace);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--sb-accent);
+}
+
+.scroll-takeaway-concept {
+  margin: 0 0 0.55rem;
+  font-family: var(--sb-display);
+  font-size: clamp(1.15rem, 2.5vw, 1.35rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--sb-ink);
+  line-height: 1.25;
+}
+
+.scroll-takeaway-body {
+  margin: 0;
+  color: var(--sb-muted);
+  font-size: 0.95rem;
+  line-height: 1.6;
 }
 
 .scroll-subhead {
@@ -776,6 +866,11 @@
   gap: 1.25rem;
 }
 
+/* Hàng 3 ô cân đối (vd. 3 điểm ở chương Lợi nhuận) */
+.scroll-lesson-grid.cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .scroll-lesson {
   border-top: 1px solid var(--sb-line);
   padding-top: 1rem;
@@ -895,6 +990,7 @@
   .scroll-machine-grid,
   .scroll-gap-grid,
   .scroll-lesson-grid,
+  .scroll-lesson-grid.cols-3,
   .scroll-dual,
   .scroll-ba-grid {
     grid-template-columns: 1fr;

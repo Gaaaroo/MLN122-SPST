@@ -1,6 +1,6 @@
 import { lazy, Suspense, useState } from "react";
 import { createGame, endTurn, resolveChoice, rollAndMove } from "../boardgameLogic";
-import { COUNTRY_PROFILES } from "../boardgameData";
+import { BOARD_TILES, COUNTRY_PROFILES } from "../boardgameData";
 import type { CountryArchetype, GameState } from "../boardgameTypes";
 import { EndScreen, nf, PlayArea, PLAYER_COLORS } from "./GameViews";
 
@@ -43,7 +43,7 @@ export default function BoardGameScreen({ onBack }: Props) {
           <h1 className="bg-h1">Đường đến World Cup</h1>
           <p className="bg-sub">
             Cờ tỷ phú kinh tế mùa World Cup: mỗi người là một nước chủ nhà, FIFA là nhà cái.
-            Ai để lại nhiều <strong>phúc lợi ròng</strong> nhất thì thắng.
+            Ai để lại nhiều <strong>phúc lợi cho dân</strong> nhất thì thắng.
           </p>
         </div>
       </header>
@@ -85,11 +85,12 @@ function HotseatGame({ onBack }: { onBack: () => void }) {
     { name: "Nước 4", profile: "developing" },
   ]);
   const [turns, setTurns] = useState(12);
+  const [playerCount, setPlayerCount] = useState(4);
 
   function start() {
     setGame(
       createGame({
-        players: setup.map((p) => ({
+        players: setup.slice(0, playerCount).map((p) => ({
           name: p.name.trim() || "Nước chủ nhà",
           profile: p.profile,
         })),
@@ -109,7 +110,7 @@ function HotseatGame({ onBack }: { onBack: () => void }) {
           </button>
           <div>
             <h1 className="bg-h1">Chơi chung 1 máy</h1>
-            <p className="bg-sub">Đặt tên và chọn mẫu nước cho 4 người chơi luân phiên.</p>
+            <p className="bg-sub">Đặt tên và chọn mẫu nước cho 2–4 người chơi luân phiên.</p>
           </div>
         </header>
 
@@ -127,8 +128,21 @@ function HotseatGame({ onBack }: { onBack: () => void }) {
         </section>
 
         <section className="bg-setup panel">
-          <h2 className="bg-section-title">Chọn 4 người chơi</h2>
-          {setup.map((p, i) => (
+          <h2 className="bg-section-title">Người chơi</h2>
+          <div className="bg-length">
+            <span className="bg-length-label">Số người chơi:</span>
+            {[2, 3, 4].map((n) => (
+              <button
+                key={n}
+                type="button"
+                className={`bg-arch-btn ${playerCount === n ? "active" : ""}`}
+                onClick={() => setPlayerCount(n)}
+              >
+                {n}
+              </button>
+            ))}
+          </div>
+          {setup.slice(0, playerCount).map((p, i) => (
             <div key={i} className="bg-setup-row">
               <span className="bg-token" style={{ background: PLAYER_COLORS[i] }}>
                 {i + 1}
@@ -191,7 +205,8 @@ function HotseatGame({ onBack }: { onBack: () => void }) {
           <div>
             <h1 className="bg-h1">Kết quả</h1>
             <p className="bg-sub">
-              Xếp theo điểm phúc lợi ròng: di sản + hài hòa + du lịch − nợ − sân trắng.
+              Xếp hạng theo điểm phúc lợi: cộng di sản, hài hòa xã hội và du lịch;
+              trừ đi nợ và sân bỏ không.
             </p>
           </div>
         </header>
@@ -202,6 +217,7 @@ function HotseatGame({ onBack }: { onBack: () => void }) {
 
   // PLAYING
   const current = game.players[game.current]!;
+  const hereTile = BOARD_TILES[current.position]!;
   return (
     <div className="bg-page bg-page-play">
       <header className="bg-topbar">
@@ -215,6 +231,9 @@ function HotseatGame({ onBack }: { onBack: () => void }) {
           <span className="bg-turn-now">
             Đến lượt:{" "}
             <strong style={{ color: PLAYER_COLORS[current.id] }}>{current.name}</strong>
+          </span>
+          <span className="bg-turn-loc">
+            Đang ở: {hereTile.icon} {hereTile.label}
           </span>
         </div>
         <span className="bg-fifa-pill">Két FIFA: {nf(game.fifaBankB)} tỷ</span>
