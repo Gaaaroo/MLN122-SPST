@@ -315,10 +315,171 @@
 
 /* Chapters shared */
 .scroll-chapter {
-  padding: 5.5rem 1.25rem 4.5rem;
+  position: relative;
+  padding: 0;
+  max-width: none;
+  margin: 0;
+  border-top: 1px solid var(--sb-line);
+  overflow: hidden;
+}
+
+.scroll-chapter-body {
+  position: relative;
+  z-index: 1;
   max-width: 1080px;
   margin: 0 auto;
-  border-top: 1px solid var(--sb-line);
+  padding: 5.5rem 1.25rem 4.5rem;
+}
+
+.scroll-chapter.has-photo {
+  border-top-color: rgba(255, 255, 255, 0.08);
+  color: #f7f5ef;
+}
+
+.scroll-chapter-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.scroll-chapter-bg-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  transform: scale(1.06);
+  filter: saturate(1.05) contrast(1.08) brightness(0.55);
+}
+
+.scroll-chapter-bg-veil {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(12, 10, 8, 0.78) 0%,
+      rgba(12, 10, 8, 0.62) 40%,
+      rgba(12, 10, 8, 0.84) 100%
+    ),
+    radial-gradient(ellipse at 50% 20%, rgba(232, 197, 71, 0.1), transparent 55%);
+}
+
+.scroll-chapter.has-photo .scroll-chapter-label {
+  color: var(--sb-accent);
+}
+
+.scroll-chapter.has-photo .scroll-title,
+.scroll-chapter.has-photo .scroll-title span {
+  color: #fdfbf4;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.4);
+}
+
+.scroll-chapter.has-photo .scroll-lead,
+.scroll-chapter.has-photo .scroll-foot,
+.scroll-chapter.has-photo .scroll-subhead {
+  color: rgba(247, 245, 239, 0.86);
+}
+
+/* Không dùng box màu — chữ trắng trên nền ảnh */
+.scroll-chapter.has-photo .scroll-cost-row,
+.scroll-chapter.has-photo .scroll-cost-table,
+.scroll-chapter.has-photo .scroll-machine-card,
+.scroll-chapter.has-photo .scroll-stat,
+.scroll-chapter.has-photo .scroll-gap,
+.scroll-chapter.has-photo .scroll-lesson,
+.scroll-chapter.has-photo .scroll-ba,
+.scroll-chapter.has-photo .scroll-ba-col,
+.scroll-chapter.has-photo .scroll-dual-pane,
+.scroll-chapter.has-photo .scroll-takeaway,
+.scroll-chapter.has-photo .scroll-rev-block {
+  background: transparent;
+  color: #f7f5ef;
+  border-color: rgba(247, 245, 239, 0.22);
+  backdrop-filter: none;
+  box-shadow: none;
+}
+
+.scroll-chapter.has-photo .scroll-cost-table {
+  border-top-color: rgba(247, 245, 239, 0.22);
+}
+
+.scroll-chapter.has-photo .scroll-cost-row {
+  border-bottom: 1px solid rgba(247, 245, 239, 0.2);
+}
+
+.scroll-chapter.has-photo .scroll-ba-col li {
+  border-left-color: rgba(247, 245, 239, 0.28);
+}
+
+.scroll-chapter.has-photo .scroll-cost-row .c {
+  color: var(--sb-accent);
+}
+
+.scroll-chapter.has-photo .scroll-takeaway {
+  border-left: 3px solid var(--sb-accent);
+  border-top: 0;
+  border-right: 0;
+  border-bottom: 0;
+  background: transparent;
+}
+
+.scroll-chapter.has-photo .scroll-takeaway-tag {
+  color: var(--sb-accent);
+}
+
+.scroll-chapter.has-photo .scroll-takeaway-concept,
+.scroll-chapter.has-photo .scroll-takeaway-body,
+.scroll-chapter.has-photo .scroll-cost-row .n,
+.scroll-chapter.has-photo .scroll-cost-row .h,
+.scroll-chapter.has-photo .scroll-machine-card p,
+.scroll-chapter.has-photo .scroll-machine-card h3,
+.scroll-chapter.has-photo .scroll-lesson p,
+.scroll-chapter.has-photo .scroll-lesson h3,
+.scroll-chapter.has-photo .scroll-lesson > span,
+.scroll-chapter.has-photo .scroll-stat-label,
+.scroll-chapter.has-photo .scroll-stat-note,
+.scroll-chapter.has-photo .scroll-gap p,
+.scroll-chapter.has-photo .scroll-gap h3,
+.scroll-chapter.has-photo .scroll-ba-name,
+.scroll-chapter.has-photo .scroll-ba-col h4,
+.scroll-chapter.has-photo .scroll-ba-col li,
+.scroll-chapter.has-photo .scroll-dual-pane h3,
+.scroll-chapter.has-photo .scroll-dual-pane li,
+.scroll-chapter.has-photo .scroll-gap-nums .lbl {
+  color: rgba(247, 245, 239, 0.88);
+}
+
+.scroll-chapter.has-photo .scroll-cost-row .y,
+.scroll-chapter.has-photo .scroll-cost-row .c,
+.scroll-chapter.has-photo .scroll-stat-value,
+.scroll-chapter.has-photo .scroll-machine-num,
+.scroll-chapter.has-photo .scroll-gap-nums .exp,
+.scroll-chapter.has-photo .scroll-gap-nums .act,
+.scroll-chapter.has-photo .scroll-dual-year {
+  color: #fdfbf4;
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.35);
+}
+
+.scroll-chapter.has-photo .scroll-ba-col.before h4 {
+  color: #7dd3a0;
+}
+
+.scroll-chapter.has-photo .scroll-ba-col.after h4 {
+  color: #f0a8a0;
+}
+
+.scroll-chapter.has-photo .scroll-dual-pane.fifa .scroll-dual-year {
+  color: var(--sb-accent);
+}
+
+.scroll-chapter.has-photo .scroll-dual-pane.host .scroll-dual-year {
+  color: #f0a8a0;
+}
+
+.scroll-chapter.has-photo .scroll-lesson.harm h3 {
+  color: #f0a8a0;
 }
 
 .scroll-chapter-head {
@@ -342,6 +503,12 @@
   color: var(--sb-muted);
   line-height: 1.55;
   font-size: 0.82rem;
+}
+
+@media (max-width: 720px) {
+  .scroll-chapter-body {
+    padding: 3.5rem 1rem 3rem;
+  }
 }
 
 /* Đúc kết MLN — một ý / một chương */
@@ -905,6 +1072,40 @@
   text-align: center;
 }
 
+/* Close có ảnh nền — cùng ngôn ngữ với các chương has-photo */
+.scroll-close.has-photo {
+  position: relative;
+  overflow: hidden;
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+.scroll-close.has-photo .scroll-close-quote,
+.scroll-close.has-photo .scroll-close-cta {
+  position: relative;
+  z-index: 1;
+}
+
+.scroll-close.has-photo .scroll-close-quote p {
+  color: rgba(247, 245, 239, 0.9);
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.35);
+}
+
+.scroll-close.has-photo .scroll-title,
+.scroll-close.has-photo .scroll-title span {
+  color: #fdfbf4;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.4);
+}
+
+.scroll-close.has-photo .btn-secondary {
+  color: #f7f5ef;
+  border-color: rgba(247, 245, 239, 0.45);
+}
+
+.scroll-close.has-photo .btn-secondary:hover {
+  background: rgba(247, 245, 239, 0.12);
+  border-color: var(--sb-accent);
+}
+
 .scroll-close-quote {
   max-width: 720px;
   margin: 0 auto 3.5rem;
@@ -945,6 +1146,173 @@
 
 .scroll-credit a:hover {
   text-decoration: underline;
+}
+
+/* Footer nền tối + ảnh Messi/Ronaldo hai bên, chữ trắng */
+.scroll-footer {
+  position: relative;
+  overflow: hidden;
+  padding: 3rem 1.25rem 3.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: #12100c;
+  color: #f7f5ef;
+  text-align: center;
+}
+
+.scroll-footer-photo {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 20%;
+  filter: saturate(1.05) contrast(1.05);
+}
+
+.scroll-footer-photo--left {
+  left: 0;
+  object-position: center 10%;
+}
+
+.scroll-footer-photo--right {
+  right: 0;
+}
+
+.scroll-footer-veil {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(18, 16, 12, 0.55) 0%,
+      rgba(18, 16, 12, 0.88) 50%,
+      rgba(18, 16, 12, 0.55) 100%
+    ),
+    rgba(18, 16, 12, 0.35);
+  pointer-events: none;
+}
+
+.scroll-footer-team-title {
+  position: relative;
+  z-index: 1;
+  margin: 0 0 1rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sb-accent);
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.5);
+}
+
+.scroll-footer-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 1040px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+}
+
+.scroll-footer-ai {
+  display: flex;
+  gap: 0.65rem;
+  align-items: center;
+}
+
+.scroll-footer-ai--left {
+  justify-content: flex-end;
+}
+
+.scroll-footer-ai--right {
+  justify-content: flex-start;
+}
+
+.scroll-footer-ai-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.scroll-footer-ai-icon:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+.scroll-footer-members {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  min-width: 0;
+}
+
+.scroll-footer-members li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.12rem;
+  flex: 0 1 auto;
+  min-width: 0;
+  font-size: 0.8rem;
+  line-height: 1.3;
+}
+
+.scroll-footer-name {
+  color: rgba(247, 245, 239, 0.94);
+  font-weight: 600;
+  text-align: center;
+  white-space: nowrap;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.55);
+}
+
+.scroll-footer-id {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 0.7rem;
+  color: rgba(247, 245, 239, 0.55);
+  white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+  .scroll-footer-inner {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .scroll-footer-ai--left,
+  .scroll-footer-ai--right {
+    justify-content: center;
+  }
+
+  .scroll-footer-members {
+    gap: 0.4rem 0.55rem;
+    overflow-x: auto;
+    max-width: 100%;
+    padding-bottom: 0.15rem;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .scroll-footer-members li {
+    font-size: 0.72rem;
+  }
+
+  .scroll-footer-id {
+    font-size: 0.64rem;
+  }
 }
 
 /* Buttons on scroll landing — keep app tokens if present */

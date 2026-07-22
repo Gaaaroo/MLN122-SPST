@@ -413,3 +413,28 @@ export const SCROLL_CLOSE = {
   titleLine2: 'BẠN CHỌN',
   ctaPrimary: 'Khám phá số liệu',
 } as const;
+
+export const SCROLL_TEAM = {
+  group: 'Nhóm 1',
+  members: [
+    { name: 'Nguyễn Minh Châu', id: 'SE180582' },
+    { name: 'Nguyễn Đức Huỳnh', id: 'SE193874' },
+    { name: 'Võ Việt Minh Đức', id: 'SE193219' },
+    { name: 'Trần Đăng Khoa', id: 'SE194576' },
+  ],
+} as const;
+
+/** Ảnh nền — Unsplash / Wikimedia Commons. */
+export const SCROLL_VISUALS = {
+  chapterBg: {
+    costs: '/landing/stadium-night.jpg',
+    revenue: '/landing/crowd.jpg',
+    profit: '/landing/pitch-ball.jpg',
+    achieve: '/landing/kick.jpg',
+    'before-after': '/landing/stadium-lights.jpg',
+    risks: '/landing/stadium-night.jpg',
+    harms: '/landing/crowd.jpg',
+    lessons: '/landing/stadium-lights.jpg',
+    close: '/landing/kick.jpg',
+  } as Record<string, string>,
+} as const;

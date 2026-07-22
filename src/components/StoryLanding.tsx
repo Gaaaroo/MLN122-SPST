@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import {
   SCROLL_ACHIEVE,
   SCROLL_BEFORE_AFTER,
@@ -11,10 +11,18 @@ import {
   SCROLL_PROFIT,
   SCROLL_REVENUE,
   SCROLL_RISKS,
+  SCROLL_TEAM,
+  SCROLL_VISUALS,
   type ScrollTakeaway,
 } from '../landingContent';
 import { MLN_CONNECTIONS } from '../realWorldData';
 import MlnChatBot from './MlnChatBot';
+import {
+  ChatGptIcon,
+  ClaudeIcon,
+  DeepSeekIcon,
+  GeminiIcon,
+} from './FooterAiIcons';
 
 interface Props {
   onExplore: () => void;
@@ -91,6 +99,44 @@ function LessonCard({
     </article>
   );
 }
+
+function ChapterShell({
+  id,
+  bg,
+  children,
+  className = '',
+}: {
+  id: string;
+  bg?: string;
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <section
+      className={`scroll-chapter${bg ? ' has-photo' : ''} ${className}`.trim()}
+      id={id}
+    >
+      {bg ? (
+        <div
+          className='scroll-chapter-bg'
+          aria-hidden
+        >
+          <img
+            src={bg}
+            alt=''
+            className='scroll-chapter-bg-img'
+            loading='lazy'
+            decoding='async'
+          />
+          <div className='scroll-chapter-bg-veil' />
+        </div>
+      ) : null}
+      <div className='scroll-chapter-body'>{children}</div>
+    </section>
+  );
+}
+
+const BG = SCROLL_VISUALS.chapterBg;
 
 export function StoryLanding({ onExplore, onPlayGame }: Props) {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -191,9 +237,9 @@ export function StoryLanding({ onExplore, onPlayGame }: Props) {
       </section>
 
       {/* 01 COSTS */}
-      <section
-        className='scroll-chapter'
+      <ChapterShell
         id='costs'
+        bg={BG.costs}
       >
         <ChapterHead
           chapter={SCROLL_COSTS.chapter}
@@ -243,12 +289,12 @@ export function StoryLanding({ onExplore, onPlayGame }: Props) {
         >
           {SCROLL_COSTS.foot}
         </p>
-      </section>
+      </ChapterShell>
 
       {/* 02 REVENUE */}
-      <section
-        className='scroll-chapter'
+      <ChapterShell
         id='revenue'
+        bg={BG.revenue}
       >
         <ChapterHead
           chapter={SCROLL_REVENUE.chapter}
@@ -293,12 +339,12 @@ export function StoryLanding({ onExplore, onPlayGame }: Props) {
           </div>
         </div>
         <ChapterTakeaway takeaway={SCROLL_REVENUE.takeaway} />
-      </section>
+      </ChapterShell>
 
       {/* 03 PROFIT */}
-      <section
-        className='scroll-chapter'
+      <ChapterShell
         id='profit'
+        bg={BG.profit}
       >
         <ChapterHead
           chapter={SCROLL_PROFIT.chapter}
@@ -376,12 +422,12 @@ export function StoryLanding({ onExplore, onPlayGame }: Props) {
           </article>
         </div>
         <ChapterTakeaway takeaway={SCROLL_PROFIT.takeaway} />
-      </section>
+      </ChapterShell>
 
       {/* 04 ACHIEVEMENTS */}
-      <section
-        className='scroll-chapter'
+      <ChapterShell
         id='achieve'
+        bg={BG.achieve}
       >
         <ChapterHead
           chapter={SCROLL_ACHIEVE.chapter}
@@ -400,12 +446,12 @@ export function StoryLanding({ onExplore, onPlayGame }: Props) {
           ))}
         </div>
         <ChapterTakeaway takeaway={SCROLL_ACHIEVE.takeaway} />
-      </section>
+      </ChapterShell>
 
       {/* 05 BEFORE / AFTER */}
-      <section
-        className='scroll-chapter'
+      <ChapterShell
         id='before-after'
+        bg={BG['before-after']}
       >
         <ChapterHead
           chapter={SCROLL_BEFORE_AFTER.chapter}
@@ -443,12 +489,12 @@ export function StoryLanding({ onExplore, onPlayGame }: Props) {
           ))}
         </div>
         <ChapterTakeaway takeaway={SCROLL_BEFORE_AFTER.takeaway} />
-      </section>
+      </ChapterShell>
 
       {/* 06 RISKS */}
-      <section
-        className='scroll-chapter'
+      <ChapterShell
         id='risks'
+        bg={BG.risks}
       >
         <ChapterHead
           chapter={SCROLL_RISKS.chapter}
@@ -467,12 +513,12 @@ export function StoryLanding({ onExplore, onPlayGame }: Props) {
           ))}
         </div>
         <ChapterTakeaway takeaway={SCROLL_RISKS.takeaway} />
-      </section>
+      </ChapterShell>
 
       {/* 07 HARMS */}
-      <section
-        className='scroll-chapter'
+      <ChapterShell
         id='harms'
+        bg={BG.harms}
       >
         <ChapterHead
           chapter={SCROLL_HARMS.chapter}
@@ -492,10 +538,14 @@ export function StoryLanding({ onExplore, onPlayGame }: Props) {
           ))}
         </div>
         <ChapterTakeaway takeaway={SCROLL_HARMS.takeaway} />
-      </section>
+      </ChapterShell>
 
-      {/* LESSONS — khung MLN122 (nội dung cố định từ MLN_CONNECTIONS) */}
-      <section className='scroll-chapter scroll-lessons'>
+      {/* LESSONS */}
+      <ChapterShell
+        id='lessons'
+        bg={BG.lessons}
+        className='scroll-lessons'
+      >
         <div
           className='scroll-chapter-head'
           data-reveal
@@ -514,10 +564,23 @@ export function StoryLanding({ onExplore, onPlayGame }: Props) {
             />
           ))}
         </div>
-      </section>
+      </ChapterShell>
 
       {/* CLOSE */}
-      <section className='scroll-close'>
+      <section className='scroll-close has-photo'>
+        <div
+          className='scroll-chapter-bg'
+          aria-hidden
+        >
+          <img
+            src={BG.close}
+            alt=''
+            className='scroll-chapter-bg-img'
+            loading='lazy'
+            decoding='async'
+          />
+          <div className='scroll-chapter-bg-veil' />
+        </div>
         <blockquote
           className='scroll-close-quote'
           data-reveal
@@ -550,6 +613,54 @@ export function StoryLanding({ onExplore, onPlayGame }: Props) {
           </div>
         </div>
       </section>
+
+      <footer className='scroll-footer'>
+        <img
+          src='/landing/messi.jpg'
+          alt=''
+          className='scroll-footer-photo scroll-footer-photo--left'
+          loading='lazy'
+          decoding='async'
+          aria-hidden
+        />
+        <img
+          src='/landing/ronaldo.jpg'
+          alt=''
+          className='scroll-footer-photo scroll-footer-photo--right'
+          loading='lazy'
+          decoding='async'
+          aria-hidden
+        />
+        <div
+          className='scroll-footer-veil'
+          aria-hidden
+        />
+        <h3 className='scroll-footer-team-title'>{SCROLL_TEAM.group}</h3>
+        <div className='scroll-footer-inner'>
+          <div
+            className='scroll-footer-ai scroll-footer-ai--left'
+            aria-hidden
+          >
+            <GeminiIcon />
+            <ClaudeIcon />
+          </div>
+          <ul className='scroll-footer-members'>
+            {SCROLL_TEAM.members.map((m) => (
+              <li key={m.id}>
+                <span className='scroll-footer-name'>{m.name}</span>
+                <span className='scroll-footer-id'>{m.id}</span>
+              </li>
+            ))}
+          </ul>
+          <div
+            className='scroll-footer-ai scroll-footer-ai--right'
+            aria-hidden
+          >
+            <ChatGptIcon />
+            <DeepSeekIcon />
+          </div>
+        </div>
+      </footer>
 
       <MlnChatBot />
     </div>
